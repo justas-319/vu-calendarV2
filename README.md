@@ -1,6 +1,6 @@
 # VU Calendar v2
 
-## User stroies
+## User stories
 
 1. As a user, I want to see up to date timetables so that I can plan my courses.
 2. As a user, I want to be able to pick my main course.
