@@ -12,4 +12,3 @@
 8. As a user, I want to see what modules are not overlapping with my main course.
 9. As a user, I want to export my calendar to use it in my calendar app.
 10. As a user, I want to log in to save my calendar.
-
