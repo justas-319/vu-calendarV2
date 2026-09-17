@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "frontend": "npm --prefix frontend run dev",
+    "backend": "dotnet run --urls http://localhost:5000",
+    "format": "dotnet format && npm --prefix frontend run format",
+    "setup": "npm --prefix frontend install"
+  }
+}
