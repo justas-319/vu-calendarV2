@@ -13,7 +13,7 @@ Implemented with: ASP.NET (REST API) and React
 ### Requrements
 
 - Node JS
-- ASP.NET
+- .NET SDK
 
 ### Install dependencies
 
