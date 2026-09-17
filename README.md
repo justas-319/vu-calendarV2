@@ -29,7 +29,7 @@ As a user, I want to be able to pick from all available modules so that I can cu
 ### 4. Detect overlaps between course and modules
 
 As a user, I want to see if my picked course and modules overlap so that I can pick modules I can actually attend.
-- When my selected course and a module overlap on the time table the module is visually flagged as overlapping before I confirm the selection.
+- When my selected course and a module overlap on the timetable the module is visually flagged as overlapping before I confirm the selection.
 
 ### 5. Search for a course
 
