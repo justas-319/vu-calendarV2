@@ -1,9 +1,31 @@
 # VU Calendar v2
 
 A web application that helps students build a personal course timetable, pick modules that don't clash with their schedule, and export the result to their own calendar app.
- 
+
 Implemented with: ASP.NET (REST API) and React
- 
+
+---
+
+## How to run
+
+**Run these comands in projects root directory.**
+
+### Requrements
+
+- Node JS
+- ASP.NET
+
+### Install dependencies
+
+`npm run setup`
+
+### Run
+
+Run these commands in separate terminal windows and go to localhost on frontend's given port.
+
+- `npm run backend`  
+- `npm run frontend`  
+
 ---
 
 ## User stories
