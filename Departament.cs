@@ -1,11 +1,11 @@
 class Departament
 {
-    public int? Id { get; set; }
-    public string? Address { get; set; }
-    public bool? Is_root { get; set; }
-    public string? Title_lt { get; set; }
-    public string? Title_en { get; set; }
-    public string? Abbreviation_lt { get; set; }
-    public string? Abbreviation_en { get; set; }
-    public List<int>? Buildings { get; set; }
+    public int? id { get; set; }
+    public string? address { get; set; }
+    public bool? is_root { get; set; }
+    public string? title_lt { get; set; }
+    public string? title_en { get; set; }
+    public string? abbreviation_lt { get; set; }
+    public string? abbreviation_en { get; set; }
+    public List<int>? buildings { get; set; }
 }
