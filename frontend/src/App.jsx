@@ -51,37 +51,37 @@ function App() {
     <div className="container-fluid p-3">
       <Header />
       <div className="selectors">
-      <Box>
-        <div className="py-2">
-          <Combobox
-            label="Faculty"
-            placeholder="Search faculty..."
-            items={faculties}
-          />
+        <Box>
+          <div className="py-2">
+            <Combobox
+              label="Faculty"
+              placeholder="Search faculty..."
+              items={faculties}
+            />
 
-          <Combobox
-            label="Course"
-            placeholder="Search course..."
-            items={courses}
-          />
+            <Combobox
+              label="Course"
+              placeholder="Search course..."
+              items={courses}
+            />
 
-          <Listbox
-            label="Year"
-            items={years}
-            value={year}
-            onChange={setYear}
-            placeholder="Select year..."
-          />
+            <Listbox
+              label="Year"
+              items={years}
+              value={year}
+              onChange={setYear}
+              placeholder="Select year..."
+            />
 
-          <Listbox
-            label="Group"
-            items={groups}
-            value={group}
-            onChange={setGroup}
-            placeholder="Select group..."
-          />
-        </div>
-      </Box>
+            <Listbox
+              label="Group"
+              items={groups}
+              value={group}
+              onChange={setGroup}
+              placeholder="Select group..."
+            />
+          </div>
+        </Box>
       </div>
 
       <Timetable message={message} />

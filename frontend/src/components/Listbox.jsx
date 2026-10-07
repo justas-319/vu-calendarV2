@@ -5,16 +5,19 @@ import {
   ListboxOptions,
 } from "@headlessui/react";
 
-function SelectListbox({ label, items, value, onChange, placeholder = "Select..." }) {
+function SelectListbox({
+  label,
+  items,
+  value,
+  onChange,
+  placeholder = "Select...",
+}) {
   return (
     <div className="mb-2">
       <h3>{label}</h3>
 
       <Listbox value={value} onChange={onChange}>
-        <ListboxButton
-          className="form-select text-start"
-          aria-label={label}
-        >
+        <ListboxButton className="form-select text-start" aria-label={label}>
           {value ? value.name : placeholder}
         </ListboxButton>
 

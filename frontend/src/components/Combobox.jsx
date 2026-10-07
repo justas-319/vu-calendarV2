@@ -14,7 +14,7 @@ function SearchSelect({ label, placeholder, items, onSelect }) {
     query === ""
       ? items
       : items.filter((item) =>
-          item.name.toLowerCase().includes(query.toLowerCase())
+          item.name.toLowerCase().includes(query.toLowerCase()),
         );
 
   function handleChange(item) {
@@ -24,38 +24,35 @@ function SearchSelect({ label, placeholder, items, onSelect }) {
 
   return (
     <div className="mb-2">
-        <h3>{label}</h3>
-        
-        <Combobox
-          immediate
-          value={selectedItem}
-          onChange={handleChange}
-          onClose={() => setQuery("")}
-        >
-        <ComboboxInput
-            className="form-control"
-            placeholder={placeholder}
-            aria-label={label}
-            autoComplete="off"
-            displayValue={(item) => item?.name || ""}
-            onChange={(event) => setQuery(event.target.value)}
-          />
+      <h3>{label}</h3>
 
-        <ComboboxOptions
-            anchor="bottom start"
-            className="list-group combobox"
-          >
-            {filteredItems.map((item) => (
-              <ComboboxOption
-                key={item.id}
-                value={item}
-                className="list-group-item list-group-item-action"
-              >
-                {item.name}
-              </ComboboxOption>
-            ))}
+      <Combobox
+        immediate
+        value={selectedItem}
+        onChange={handleChange}
+        onClose={() => setQuery("")}
+      >
+        <ComboboxInput
+          className="form-control"
+          placeholder={placeholder}
+          aria-label={label}
+          autoComplete="off"
+          displayValue={(item) => item?.name || ""}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+
+        <ComboboxOptions anchor="bottom start" className="list-group combobox">
+          {filteredItems.map((item) => (
+            <ComboboxOption
+              key={item.id}
+              value={item}
+              className="list-group-item list-group-item-action"
+            >
+              {item.name}
+            </ComboboxOption>
+          ))}
         </ComboboxOptions>
-        </Combobox>
+      </Combobox>
     </div>
   );
 }
