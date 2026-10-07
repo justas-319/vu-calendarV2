@@ -5,13 +5,6 @@ import Combobox from "./components/Combobox";
 import Listbox from "./components/Listbox";
 import Timetable from "./components/Timetable";
 
-const years = [
-  { id: 1, name: "1 year" },
-  { id: 2, name: "2 year" },
-  { id: 3, name: "3 year" },
-  { id: 4, name: "4 year" },
-];
-
 const groups = [
   { id: 1, name: "Group 1" },
   { id: 2, name: "Group 2" },
@@ -22,7 +15,6 @@ const groups = [
 
 function App() {
   const [message, setMessage] = useState("");
-  const [year, setYear] = useState(null);
   const [group, setGroup] = useState(null);
 
   // list of choices
@@ -32,6 +24,9 @@ function App() {
 
   const [courses, setCourses] = useState([]);
   const [course, setCourse] = useState(null);
+
+  const [years, setYears] = useState([]);
+  const [year, setYear] = useState(null);
 
   // fetch faculty options one time, when the page first loads
   useEffect(() => {
@@ -52,7 +47,7 @@ function App() {
     getFaculties();
   }, []);
 
-  // fetches when the user selects a faculty
+  // fetches courses when the user selects a faculty
   useEffect(() => {
     async function getCourses() {
       const response = await fetch(`/api/programs/${faculty.abbreviation}`);
@@ -71,6 +66,28 @@ function App() {
       getCourses();
     }
   }, [faculty]);
+
+  // fetches years when the user selects a course
+  useEffect(() => {
+    async function getYears() {
+      const response = await fetch(
+        `/api/courses/${faculty.abbreviation}/${course.name}`,
+      );
+      const data = await response.json();
+
+      setYears(
+        data.map((year) => ({
+          id: year,
+          name: `${year}`,
+        })),
+      );
+    }
+
+    // we need both faculty and course to display years
+    if (faculty !== null && course !== null) {
+      getYears();
+    }
+  }, [faculty, course]);
 
   useEffect(() => {
     async function getMessage() {
