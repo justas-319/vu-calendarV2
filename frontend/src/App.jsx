@@ -5,12 +5,6 @@ import Combobox from "./components/Combobox";
 import Listbox from "./components/Listbox";
 import Timetable from "./components/Timetable";
 
-const courses = [
-  { id: 1, name: "Computer Science" },
-  { id: 2, name: "Data Science" },
-  { id: 3, name: "Physics" },
-];
-
 const years = [
   { id: 1, name: "1 year" },
   { id: 2, name: "2 year" },
@@ -36,6 +30,9 @@ function App() {
   // user selected
   const [faculty, setFaculty] = useState(null);
 
+  const [courses, setCourses] = useState([]);
+  const [course, setCourse] = useState(null);
+
   // fetch faculty options one time, when the page first loads
   useEffect(() => {
     async function getFaculties() {
@@ -54,6 +51,26 @@ function App() {
 
     getFaculties();
   }, []);
+
+  // fetches when the user selects a faculty
+  useEffect(() => {
+    async function getCourses() {
+      const response = await fetch(`/api/programs/${faculty.abbreviation}`);
+      const data = await response.json();
+
+      setCourses(
+        data.map((course) => ({
+          id: course,
+          name: course,
+        })),
+      );
+    }
+
+    // so it doesnt request for /api/programs/null
+    if (faculty !== null) {
+      getCourses();
+    }
+  }, [faculty]);
 
   useEffect(() => {
     async function getMessage() {
@@ -91,6 +108,7 @@ function App() {
                 label="Course"
                 placeholder="Search course..."
                 items={courses}
+                onSelect={setCourse}
               />
 
               {/* makes year and group be next to each other */}
