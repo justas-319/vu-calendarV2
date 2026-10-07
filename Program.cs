@@ -1,5 +1,4 @@
 using System.Net;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 static async Task GetAsync(HttpClient httpClient)
@@ -15,7 +14,7 @@ static async Task<List<Departament>> GetDepartaments(HttpClient httpclient)
     var response = await httpclient.GetAsync("api/department");
     response.EnsureSuccessStatusCode();
     string jsonString = await response.Content.ReadAsStringAsync();
-    List<Departament> departaments = JsonSerializer.Deserialize<List<Departament>>(jsonString, new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
+    List<Departament> departaments = JsonSerializer.Deserialize<List<Departament>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     return departaments;
 }
 
@@ -24,7 +23,7 @@ static string getDeprataments(List<Departament> departaments)
     List<string> departament_abreviation = new List<string>();
     foreach (Departament i in departaments)
     {
-        if(i.abbreviation_lt != null)
+        if (i.abbreviation_lt != null)
         {
             departament_abreviation.Add(i.abbreviation_lt.ToLower());
             //Console.WriteLine(i.abbreviation_lt);
@@ -90,12 +89,12 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.MapGet("/api/message", () => "message from c#");
-app.MapGet("/api/vu-api", async () => {await GetAsync(mainApi);});
+app.MapGet("/api/vu-api", async () => { await GetAsync(mainApi); });
 app.MapGet("/api/departaments", () => getDeprataments(departaments));
-app.MapGet("/api/programs/{depart}", async (string depart) => {return await getProgram(depart, mainApi);});
+app.MapGet("/api/programs/{depart}", async (string depart) => { return await getProgram(depart, mainApi); });
 // program name is expected to use + insted of space
-app.MapGet("/api/courses/{depart}/{program_name}", async (string depart, string program_name) => {return await getCourse(depart, program_name, mainApi);});
+app.MapGet("/api/courses/{depart}/{program_name}", async (string depart, string program_name) => { return await getCourse(depart, program_name, mainApi); });
 // course is just a number
-app.MapGet("/api/groups/{depart}/{program_name}/{course}", async (string depart, string program_name, string course) => {return await getGroup(depart, program_name, course, mainApi);});
+app.MapGet("/api/groups/{depart}/{program_name}/{course}", async (string depart, string program_name, string course) => { return await getGroup(depart, program_name, course, mainApi); });
 
 app.Run();
