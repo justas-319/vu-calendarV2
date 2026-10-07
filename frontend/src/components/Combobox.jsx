@@ -23,17 +23,16 @@ function SearchSelect({ label, placeholder, items, onSelect }) {
   }
 
   return (
-    <div className="card mb-3">
-      <div className="card-body">
+    <div className="mb-2">
         <h3>{label}</h3>
-
+        
         <Combobox
           immediate
           value={selectedItem}
           onChange={handleChange}
           onClose={() => setQuery("")}
         >
-          <ComboboxInput
+        <ComboboxInput
             className="form-control"
             placeholder={placeholder}
             aria-label={label}
@@ -42,7 +41,7 @@ function SearchSelect({ label, placeholder, items, onSelect }) {
             onChange={(event) => setQuery(event.target.value)}
           />
 
-          <ComboboxOptions
+        <ComboboxOptions
             anchor="bottom start"
             className="list-group combobox"
           >
@@ -55,9 +54,8 @@ function SearchSelect({ label, placeholder, items, onSelect }) {
                 {item.name}
               </ComboboxOption>
             ))}
-          </ComboboxOptions>
+        </ComboboxOptions>
         </Combobox>
-      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import Box from "./components/Box";
 import Combobox from "./components/Combobox";
+import Listbox from "./components/Listbox";
 import Timetable from "./components/Timetable";
 
 const faculties = [
@@ -16,6 +17,13 @@ const courses = [
   { id: 3, name: "Physics" },
 ];
 
+const years = [
+  { id: 1, name: "1 year" },
+  { id: 2, name: "2 year" },
+  { id: 3, name: "3 year" },
+  { id: 4, name: "4 year" },
+];
+
 const groups = [
   { id: 1, name: "Group 1" },
   { id: 2, name: "Group 2" },
@@ -26,7 +34,8 @@ const groups = [
 
 function App() {
   const [message, setMessage] = useState("");
-  const [year, setYear] = useState("1");
+  const [year, setYear] = useState(null);
+  const [group, setGroup] = useState(null);
 
   useEffect(() => {
     async function getMessage() {
@@ -41,49 +50,38 @@ function App() {
   return (
     <div className="container-fluid p-3">
       <Header />
-
-      <div className="row g-3 py-3">
-        <div className="col-3">
+      <div className="selectors">
+      <Box>
+        <div className="py-2">
           <Combobox
             label="Faculty"
             placeholder="Search faculty..."
             items={faculties}
           />
-        </div>
 
-        <div className="col-3">
           <Combobox
             label="Course"
             placeholder="Search course..."
             items={courses}
           />
-        </div>
 
-        <div className="card col-3 align-self-start">
-          <div className="card-body">
-            <h3>Year</h3>
+          <Listbox
+            label="Year"
+            items={years}
+            value={year}
+            onChange={setYear}
+            placeholder="Select year..."
+          />
 
-            <select
-              id="year"
-              className="form-select"
-              value={year}
-              onChange={(event) => setYear(event.target.value)}
-            >
-              <option value="1">1 year</option>
-              <option value="2">2 year</option>
-              <option value="3">3 year</option>
-              <option value="4">4 year</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="col-3">
-          <Combobox
+          <Listbox
             label="Group"
-            placeholder="Search group..."
             items={groups}
+            value={group}
+            onChange={setGroup}
+            placeholder="Select group..."
           />
         </div>
+      </Box>
       </div>
 
       <Timetable message={message} />
