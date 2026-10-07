@@ -106,7 +106,15 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.MapGet("/api/message", () => { return "message from c#"; });
-app.MapGet("/api/departments", () => { return GetDepartmentAbbreviations(departments); });
+app.MapGet("/api/departments", () =>
+{
+    return departments.Select(department => new
+    {
+        name = department.TitleLt,
+        abbreviation = department.AbbreviationLt.ToLower()
+    });
+});
+
 app.MapGet("/api/programs/{department}", async (string department) => { return await GetPrograms(department, mainApi); });
 
 // program name is expected to use + instead of space

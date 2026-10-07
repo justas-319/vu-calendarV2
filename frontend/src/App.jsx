@@ -5,12 +5,6 @@ import Combobox from "./components/Combobox";
 import Listbox from "./components/Listbox";
 import Timetable from "./components/Timetable";
 
-const faculties = [
-  { id: 1, name: "Mathematics" },
-  { id: 2, name: "Physics" },
-  { id: 3, name: "Computer Science" },
-];
-
 const courses = [
   { id: 1, name: "Computer Science" },
   { id: 2, name: "Data Science" },
@@ -36,6 +30,30 @@ function App() {
   const [message, setMessage] = useState("");
   const [year, setYear] = useState(null);
   const [group, setGroup] = useState(null);
+
+  // list of choices
+  const [faculties, setFaculties] = useState([]);
+  // user selected
+  const [faculty, setFaculty] = useState(null);
+
+  // fetch faculty options one time, when the page first loads
+  useEffect(() => {
+    async function getFaculties() {
+      const response = await fetch("/api/departments");
+      const data = await response.json();
+
+      // use abbreviation as id for combobox items
+      setFaculties(
+        data.map((department) => ({
+          id: department.abbreviation,
+          name: department.name,
+          abbreviation: department.abbreviation,
+        })),
+      );
+    }
+
+    getFaculties();
+  }, []);
 
   useEffect(() => {
     async function getMessage() {
@@ -66,6 +84,7 @@ function App() {
                 label="Faculty"
                 placeholder="Search faculty..."
                 items={faculties}
+                onSelect={setFaculty}
               />
 
               <Combobox
