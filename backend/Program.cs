@@ -30,6 +30,7 @@ static string GetDepartmentAbbreviations(List<Department> departments)
     return JsonSerializer.Serialize(departmentAbbreviations);
 }
 
+// [TODO] filter out first element "Studiju programa" and empty elements "" 
 static async Task<string> GetPrograms(string department, HttpClient httpClient)
 {
     var response = await httpClient.GetAsync(department + "/ajax_program_select_choices/11/?study_type_id=1");
@@ -48,6 +49,7 @@ static async Task<string> GetPrograms(string department, HttpClient httpClient)
     return JsonSerializer.Serialize(programs);
 }
 
+// [TODO] filter out first element "Kursas"
 static async Task<string> GetCourses(string department, string programName, HttpClient httpClient)
 {
     var response = await httpClient.GetAsync(
