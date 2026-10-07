@@ -5,17 +5,8 @@ import Combobox from "./components/Combobox";
 import Listbox from "./components/Listbox";
 import Timetable from "./components/Timetable";
 
-const groups = [
-  { id: 1, name: "Group 1" },
-  { id: 2, name: "Group 2" },
-  { id: 3, name: "Group 3" },
-  { id: 4, name: "Group 4" },
-  { id: 5, name: "Group 5" },
-];
-
 function App() {
   const [message, setMessage] = useState("");
-  const [group, setGroup] = useState(null);
 
   // list of choices
   const [faculties, setFaculties] = useState([]);
@@ -27,6 +18,9 @@ function App() {
 
   const [years, setYears] = useState([]);
   const [year, setYear] = useState(null);
+
+  const [groups, setGroups] = useState([]);
+  const [group, setGroup] = useState(null);
 
   // fetch faculty options one time, when the page first loads
   useEffect(() => {
@@ -88,6 +82,37 @@ function App() {
       getYears();
     }
   }, [faculty, course]);
+
+  // fetches groups when the user selects a year
+  useEffect(() => {
+    async function getGroups() {
+      // this only returns the first number instead of "1 Kursas", gives "1"
+      const courseNumber = year.id.split(" ")[0];
+
+      const response = await fetch(
+        `/api/groups/${faculty.abbreviation}/${course.name}/${courseNumber}`,
+      );
+
+      const data = await response.json();
+
+      setGroups(
+        data.map((group) => {
+          // takes the last 2 elements
+          // so "Bakalauro nuolatine, Programu sistemos 1 Kursas 2 Grupe" turns into "2 Grupe"
+          const groupName = group.split(" ").slice(-2).join(" ");
+
+          return {
+            id: groupName,
+            name: groupName,
+          };
+        }),
+      );
+    }
+
+    if (faculty !== null && course !== null && year !== null) {
+      getGroups();
+    }
+  }, [faculty, course, year]);
 
   useEffect(() => {
     async function getMessage() {
