@@ -1,76 +1,90 @@
-using System.Net;
 using System.Text.Json;
 
-static async Task GetAsync(HttpClient httpClient)
+static async Task<List<Department>> GetDepartments(HttpClient httpClient)
 {
-    var response = await httpClient.GetAsync("api");
+    var response = await httpClient.GetAsync("api/department");
     response.EnsureSuccessStatusCode();
-    var jsonResponse = await response.Content.ReadAsStringAsync();
-    Console.Write(jsonResponse);
-}
 
-static async Task<List<Departament>> GetDepartaments(HttpClient httpclient)
-{
-    var response = await httpclient.GetAsync("api/department");
-    response.EnsureSuccessStatusCode();
     string jsonString = await response.Content.ReadAsStringAsync();
-    List<Departament> departaments = JsonSerializer.Deserialize<List<Departament>>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-    return departaments;
+
+    List<Department> departments = JsonSerializer.Deserialize<List<Department>>(
+        jsonString,
+        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+    );
+
+    return departments;
 }
 
-static string getDeprataments(List<Departament> departaments)
+static string GetDepartmentAbbreviations(List<Department> departments)
 {
-    List<string> departament_abreviation = new List<string>();
-    foreach (Departament i in departaments)
+    List<string> departmentAbbreviations = new List<string>();
+
+    foreach (Department department in departments)
     {
-        if (i.abbreviation_lt != null)
+        if (department.AbbreviationLt != null)
         {
-            departament_abreviation.Add(i.abbreviation_lt.ToLower());
-            //Console.WriteLine(i.abbreviation_lt);
+            departmentAbbreviations.Add(department.AbbreviationLt.ToLower());
         }
     }
-    return JsonSerializer.Serialize(departament_abreviation);
+
+    return JsonSerializer.Serialize(departmentAbbreviations);
 }
 
-static async Task<string> getProgram(string department, HttpClient httpClient)
+static async Task<string> GetPrograms(string department, HttpClient httpClient)
 {
     var response = await httpClient.GetAsync(department + "/ajax_program_select_choices/11/?study_type_id=1");
     response.EnsureSuccessStatusCode();
+
     string jsonString = await response.Content.ReadAsStringAsync();
-    Programs a = JsonSerializer.Deserialize<Programs>(jsonString);
+
+    Programs programResponse = JsonSerializer.Deserialize<Programs>(jsonString);
     List<string> programs = new List<string>();
-    foreach (List<string?> item in a.programs)
+
+    foreach (List<string?> item in programResponse.ProgramsList)
     {
         programs.Add(item[1]);
     }
+
     return JsonSerializer.Serialize(programs);
 }
 
-static async Task<string> getCourse(string department, string program_name, HttpClient httpClient)
+static async Task<string> GetCourses(string department, string programName, HttpClient httpClient)
 {
-    var response = await httpClient.GetAsync($"{department}/ajax_course_select_choices/11/?study_type_id=1&study_program_name={program_name}");
+    var response = await httpClient.GetAsync(
+        $"{department}/ajax_course_select_choices/11/?study_type_id=1&study_program_name={programName}"
+    );
     response.EnsureSuccessStatusCode();
+
     string jsonString = await response.Content.ReadAsStringAsync();
-    Course a = JsonSerializer.Deserialize<Course>(jsonString);
+
+    Course courseResponse = JsonSerializer.Deserialize<Course>(jsonString);
     List<string> courses = new List<string>();
-    foreach (Object[] item in a.courses)
+
+    foreach (Object[] item in courseResponse.Courses)
     {
         courses.Add(item[1].ToString());
     }
+
     return JsonSerializer.Serialize(courses);
 }
 
-static async Task<string> getGroup(string department, string program_name, string course, HttpClient httpClient)
+static async Task<string> GetGroups(string department, string programName, string course, HttpClient httpClient)
 {
-    var response = await httpClient.GetAsync($"{department}/ajax_filtered_groups/11/?study_type_id=1&study_program_name={program_name}&course={course}&exams=False");
+    var response = await httpClient.GetAsync(
+        $"{department}/ajax_filtered_groups/11/?study_type_id=1&study_program_name={programName}&course={course}&exams=False"
+    );
     response.EnsureSuccessStatusCode();
+
     string jsonString = await response.Content.ReadAsStringAsync();
-    Groups a = JsonSerializer.Deserialize<Groups>(jsonString);
+
+    Groups groupResponse = JsonSerializer.Deserialize<Groups>(jsonString);
     List<string> groups = new List<string>();
-    foreach (Group item in a.groups)
+
+    foreach (Group item in groupResponse.GroupsList)
     {
-        groups.Add(item.group);
+        groups.Add(item.GroupName);
     }
+
     return JsonSerializer.Serialize(groups);
 }
 
@@ -79,22 +93,32 @@ HttpClient mainApi = new()
     BaseAddress = new Uri("https://tvarkarasciai.vu.lt")
 };
 
-List<Departament> departaments = await GetDepartaments(mainApi);
-// List<Group> groups = GetGroups("failas.json");
-
+// Using custom User Agent to not trigger captcha
 mainApi.DefaultRequestHeaders.Clear();
-mainApi.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"); // Using custom User Agent to not triger captcha
+mainApi.DefaultRequestHeaders.Add(
+    "User-Agent",
+    "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"
+);
+
+List<Department> departments = await GetDepartments(mainApi);
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapGet("/api/message", () => "message from c#");
-app.MapGet("/api/vu-api", async () => { await GetAsync(mainApi); });
-app.MapGet("/api/departaments", () => getDeprataments(departaments));
-app.MapGet("/api/programs/{depart}", async (string depart) => { return await getProgram(depart, mainApi); });
-// program name is expected to use + insted of space
-app.MapGet("/api/courses/{depart}/{program_name}", async (string depart, string program_name) => { return await getCourse(depart, program_name, mainApi); });
+app.MapGet("/api/message", () => { return "message from c#"; });
+app.MapGet("/api/departments", () => { return GetDepartmentAbbreviations(departments); });
+app.MapGet("/api/programs/{department}", async (string department) => { return await GetPrograms(department, mainApi); });
+
+// program name is expected to use + instead of space
+app.MapGet("/api/courses/{department}/{programName}", async (string department, string programName) =>
+{
+    return await GetCourses(department, programName, mainApi);
+});
+
 // course is just a number
-app.MapGet("/api/groups/{depart}/{program_name}/{course}", async (string depart, string program_name, string course) => { return await getGroup(depart, program_name, course, mainApi); });
+app.MapGet("/api/groups/{department}/{programName}/{course}", async (string department, string programName, string course) =>
+{
+    return await GetGroups(department, programName, course, mainApi);
+});
 
 app.Run();

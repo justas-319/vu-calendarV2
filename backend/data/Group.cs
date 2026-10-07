@@ -1,11 +1,19 @@
+using System.Text.Json.Serialization;
+
 class Groups
 {
-    public List<Group> groups { get; set; }
+    [JsonPropertyName("groups")]
+    public List<Group> GroupsList { get; set; } = [];
 }
 
 class Group
 {
-    public string? group { get; set; }
-    public string? url { get; set; }
-    public string? favicon { get; set; }
+    [JsonPropertyName("group")]
+    public string? GroupName { get; set; }
+
+    [JsonPropertyName("url")]
+    public string? Url { get; set; }
+
+    [JsonPropertyName("favicon")]
+    public string? Favicon { get; set; }
 }

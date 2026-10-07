@@ -1,4 +1,7 @@
+using System.Text.Json.Serialization;
+
 class Programs
 {
-    public List<List<string?>> programs { get; set; }
+    [JsonPropertyName("programs")]
+    public List<List<string?>> ProgramsList { get; set; }
 }
