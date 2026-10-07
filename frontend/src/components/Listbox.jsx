@@ -14,7 +14,7 @@ function SelectListbox({
 }) {
   return (
     <div className="mb-2">
-      <h3>{label}</h3>
+      <div className="form-label mb-1">{label}</div>
 
       <Listbox value={value} onChange={onChange}>
         <ListboxButton className="form-select text-start" aria-label={label}>
