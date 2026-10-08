@@ -1,8 +1,10 @@
 function Timetable({ message }) {
   return (
-    <div className="position-fixed bottom-0 start-0 w-100 timetable bg-light p-3 overflow-auto">
-      <h2>Timetable</h2>
-      <p>{message}</p>
+    <div className="card h-100">
+      <div className="card-body">
+        <h4>Timetable</h4>
+        {message}
+      </div>
     </div>
   );
 }

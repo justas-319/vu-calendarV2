@@ -2,8 +2,8 @@
   "private": true,
   "scripts": {
     "frontend": "npm --prefix frontend run dev",
-    "backend": "dotnet run --urls http://localhost:5000",
-    "format": "dotnet format && npm --prefix frontend run format",
+    "backend": "dotnet run --project backend/vu-calendarV2.csproj --urls http://localhost:5000",
+    "format": "dotnet format backend/vu-calendarV2.csproj && npm --prefix frontend run format",
     "setup": "npm --prefix frontend install"
   }
 }
