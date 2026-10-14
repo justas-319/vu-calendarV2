@@ -33,6 +33,7 @@ function App() {
     setSelectedModule,
     selectedModulesArray,
     addModule,
+    removeModule,
   } = useModuleSelector();
 
   const [message, setMessage] = useState("");
@@ -151,9 +152,20 @@ function App() {
       <div className="card">
         <div className="card-body py-2 d-flex align-items-center gap-2">
           Selected modules:
-          {selectedModulesArray.map((module) => (
-            <div key={module.id} className="border rounded p-1">
+          {selectedModulesArray.map((module, index) => (
+            <div
+              key={index}
+              className="border rounded px-2 d-flex align-items-center gap-2"
+            >
               {module.name}
+
+              <button
+                type="button"
+                className="btn text-danger p-0 border-0"
+                onClick={() => removeModule(index)}
+              >
+                X
+              </button>
             </div>
           ))}
         </div>

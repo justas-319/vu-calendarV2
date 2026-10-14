@@ -33,6 +33,12 @@ function useModuleSelector() {
     });
   }
 
+  function removeModule(indexToRemove) {
+    setSelectedModulesArray((currentArray) => {
+      return currentArray.filter((module, index) => index != indexToRemove);
+    });
+  }
+
   return {
     moduleFaculties,
     selectedModuleFaculty,
@@ -42,6 +48,7 @@ function useModuleSelector() {
     setSelectedModule,
     selectedModulesArray,
     addModule,
+    removeModule,
   };
 }
 
