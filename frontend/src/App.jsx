@@ -26,9 +26,13 @@ function App() {
 
   const {
     moduleFaculties,
+    selectedModuleFaculty,
     setSelectedModuleFaculty,
     modules,
+    selectedModule,
     setSelectedModule,
+    selectedModulesArray,
+    addModule,
   } = useModuleSelector();
 
   const [message, setMessage] = useState("");
@@ -123,6 +127,15 @@ function App() {
                   items={modules}
                   onSelect={setSelectedModule}
                 />
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={addModule}
+                  disabled={!selectedModuleFaculty || !selectedModule}
+                >
+                  Add module
+                </button>
               </div>
             </Box>
           </div>
@@ -136,7 +149,14 @@ function App() {
 
       {/* bottom: selected modules - view your modules and remove them */}
       <div className="card">
-        <div className="card-body py-2">Selected modules:</div>
+        <div className="card-body py-2 d-flex align-items-center gap-2">
+          Selected modules:
+          {selectedModulesArray.map((module) => (
+            <div key={module.id} className="border rounded p-1">
+              {module.name}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -20,6 +20,19 @@ function useModuleSelector() {
   const [selectedModuleFaculty, setSelectedModuleFaculty] = useState(null);
   const [selectedModule, setSelectedModule] = useState(null);
 
+  // array of modules the user has added
+  const [selectedModulesArray, setSelectedModulesArray] = useState([]);
+
+  function addModule() {
+    if (!selectedModule || !selectedModuleFaculty) {
+      return;
+    }
+
+    setSelectedModulesArray((currentArray) => {
+      return currentArray.concat(selectedModule);
+    });
+  }
+
   return {
     moduleFaculties,
     selectedModuleFaculty,
@@ -27,6 +40,8 @@ function useModuleSelector() {
     modules,
     selectedModule,
     setSelectedModule,
+    selectedModulesArray,
+    addModule,
   };
 }
 
