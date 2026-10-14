@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 const studyTypes = [
-  { id: 1, name: "test1" },
-  { id: 2, name: "test2" },
-  { id: 3, name: "test3" },
-  { id: 4, name: "test4" },
-  { id: 5, name: "test5" },
+  { id: 1, name: "studyType1" },
+  { id: 2, name: "studyType2" },
+  { id: 3, name: "studyType3" },
+  { id: 4, name: "studyType4" },
+  { id: 5, name: "studyType5" },
 ];
 
 function useStudySelector() {

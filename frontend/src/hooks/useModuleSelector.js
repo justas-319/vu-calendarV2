@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 
 const moduleFaculties = [
-  { id: 1, name: "test1" },
-  { id: 2, name: "test2" },
-  { id: 3, name: "test3" },
-  { id: 4, name: "test4" },
-  { id: 5, name: "test5" },
+  { id: 1, name: "faculty1" },
+  { id: 2, name: "faculty2" },
+  { id: 3, name: "faculty3" },
+  { id: 4, name: "faculty4" },
+  { id: 5, name: "faculty5" },
 ];
 
 const modules = [
-  { id: 1, name: "test1" },
-  { id: 2, name: "test2" },
-  { id: 3, name: "test3" },
-  { id: 4, name: "test4" },
-  { id: 5, name: "test5" },
+  { id: 1, name: "module1" },
+  { id: 2, name: "module2" },
+  { id: 3, name: "module3" },
+  { id: 4, name: "module4" },
+  { id: 5, name: "module5" },
 ];
 
 function useModuleSelector() {
