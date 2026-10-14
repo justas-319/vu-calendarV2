@@ -1,4 +1,6 @@
 using System.Text.Json;
+using AngleSharp;
+using AngleSharp.Dom;
 
 static async Task<List<Department>> GetDepartments(HttpClient httpClient)
 {
@@ -90,6 +92,23 @@ static async Task<string> GetGroups(string department, string programName, strin
     return JsonSerializer.Serialize(groups);
 }
 
+static async Task<string> GetCalendar(string department, string programName, string course, string group, HttpClient httpClient)
+{
+    // for start hardcoded year to 2026. Will need changes. Maybe get from frontend??
+    var groupFullName = programName.Replace(' ', '-') + "-" + course + "k" + "-" + group + "gr-2026";
+    var response = await httpClient.GetAsync(
+        // the event parsing will be tricky, because vu api returns multiple lists if number of events exedes 100
+        // for now focusing on this week
+        $"{department}/ajax_fullcalendar_events/{groupFullName}/group/321/?start=2026-10-12T00:00:00+03:00&end=2026-10-17T00:00:00+03:00"
+    );
+    response.EnsureSuccessStatusCode();
+    Stream jsonStream = await response.Content.ReadAsStreamAsync();
+    Events events = JsonSerializer.Deserialize<Events>(jsonStream);
+    jsonStream.Close();
+    List<Event> events1 = new List<Event>();
+    foreach(List<>)
+}
+
 HttpClient mainApi = new()
 {
     BaseAddress = new Uri("https://tvarkarasciai.vu.lt")
@@ -117,7 +136,10 @@ app.MapGet("/api/departments", () =>
     });
 });
 
-app.MapGet("/api/programs/{department}", async (string department) => { return await GetPrograms(department, mainApi); });
+app.MapGet("/api/programs/{department}", async (string department) => 
+{ 
+    return await GetPrograms(department, mainApi);
+});
 
 // program name is expected to use + instead of space
 app.MapGet("/api/courses/{department}/{programName}", async (string department, string programName) =>
@@ -131,4 +153,9 @@ app.MapGet("/api/groups/{department}/{programName}/{course}", async (string depa
     return await GetGroups(department, programName, course, mainApi);
 });
 
+app.MapGet("/api/calendar/{department}/{programName}/{course}/{group}", async (string department, string programName, string course, string group) =>
+{
+    return await GetCalendar(department, programName, course, group, mainApi);
+}
+);
 app.Run();
