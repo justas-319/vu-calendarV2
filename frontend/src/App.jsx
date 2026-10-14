@@ -9,15 +9,15 @@ import useStudySelector from "./hooks/useStudySelector";
 function App() {
   const {
     faculties,
-    setFaculty,
+    setSelectedFaculty,
     courses,
-    setCourse,
+    setSelectedCourse,
     years,
-    year,
-    setYear,
+    selectedYear,
+    setSelectedYear,
     groups,
-    group,
-    setGroup,
+    selectedGroup,
+    setSelectedGroup,
   } = useStudySelector();
 
   const [message, setMessage] = useState("");
@@ -51,14 +51,14 @@ function App() {
                 label="Faculty"
                 placeholder="Search faculty..."
                 items={faculties}
-                onSelect={setFaculty}
+                onSelect={setSelectedFaculty}
               />
 
               <Combobox
                 label="Course"
                 placeholder="Search course..."
                 items={courses}
-                onSelect={setCourse}
+                onSelect={setSelectedCourse}
               />
 
               {/* makes year and group be next to each other */}
@@ -67,8 +67,8 @@ function App() {
                   <Listbox
                     label="Year"
                     items={years}
-                    value={year}
-                    onChange={setYear}
+                    value={selectedYear}
+                    onChange={setSelectedYear}
                     placeholder="Select year..."
                   />
                 </div>
@@ -77,8 +77,8 @@ function App() {
                   <Listbox
                     label="Group"
                     items={groups}
-                    value={group}
-                    onChange={setGroup}
+                    value={selectedGroup}
+                    onChange={setSelectedGroup}
                     placeholder="Select group..."
                   />
                 </div>

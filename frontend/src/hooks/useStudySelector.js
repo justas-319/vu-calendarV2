@@ -4,16 +4,16 @@ function useStudySelector() {
   // list of choices
   const [faculties, setFaculties] = useState([]);
   // user selected
-  const [faculty, setFaculty] = useState(null);
+  const [selectedFaculty, setSelectedFaculty] = useState(null);
 
   const [courses, setCourses] = useState([]);
-  const [course, setCourse] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
   const [years, setYears] = useState([]);
-  const [year, setYear] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(null);
 
   const [groups, setGroups] = useState([]);
-  const [group, setGroup] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null);
 
   // fetch faculty options one time, when the page first loads
   useEffect(() => {
@@ -37,7 +37,7 @@ function useStudySelector() {
   // fetches courses when the user selects a faculty
   useEffect(() => {
     async function getCourses() {
-      const response = await fetch(`/api/programs/${faculty.abbreviation}`);
+      const response = await fetch(`/api/programs/${selectedFaculty.abbreviation}`);
       const data = await response.json();
 
       setCourses(
@@ -49,16 +49,16 @@ function useStudySelector() {
     }
 
     // so it doesnt request for /api/programs/null
-    if (faculty !== null) {
+    if (selectedFaculty !== null) {
       getCourses();
     }
-  }, [faculty]);
+  }, [selectedFaculty]);
 
   // fetches years when the user selects a course
   useEffect(() => {
     async function getYears() {
       const response = await fetch(
-        `/api/courses/${faculty.abbreviation}/${course.name}`,
+        `/api/courses/${selectedFaculty.abbreviation}/${selectedCourse.name}`,
       );
       const data = await response.json();
 
@@ -71,19 +71,19 @@ function useStudySelector() {
     }
 
     // we need both faculty and course to display years
-    if (faculty !== null && course !== null) {
+    if (selectedFaculty !== null && selectedCourse !== null) {
       getYears();
     }
-  }, [faculty, course]);
+  }, [selectedFaculty, selectedCourse]);
 
   // fetches groups when the user selects a year
   useEffect(() => {
     async function getGroups() {
       // this only returns the first number instead of "1 Kursas", gives "1"
-      const courseNumber = year.id.split(" ")[0];
+      const courseNumber = selectedYear.id.split(" ")[0];
 
       const response = await fetch(
-        `/api/groups/${faculty.abbreviation}/${course.name}/${courseNumber}`,
+        `/api/groups/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}`,
       );
 
       const data = await response.json();
@@ -102,25 +102,25 @@ function useStudySelector() {
       );
     }
 
-    if (faculty !== null && course !== null && year !== null) {
+    if (selectedFaculty !== null && selectedCourse !== null && selectedYear !== null) {
       getGroups();
     }
-  }, [faculty, course, year]);
+  }, [selectedFaculty, selectedCourse, selectedYear]);
 
   // give App access to the states and setters
   return {
     faculties,
-    faculty,
-    setFaculty,
+    selectedFaculty,
+    setSelectedFaculty,
     courses,
-    course,
-    setCourse,
+    selectedCourse,
+    setSelectedCourse,
     years,
-    year,
-    setYear,
+    selectedYear,
+    setSelectedYear,
     groups,
-    group,
-    setGroup,
+    selectedGroup,
+    setSelectedGroup,
   };
 }
 
