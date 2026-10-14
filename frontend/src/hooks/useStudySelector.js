@@ -1,10 +1,20 @@
 import { useEffect, useState } from "react";
 
+const studyTypes = [
+  { id: 1, name: "test1" },
+  { id: 2, name: "test2" },
+  { id: 3, name: "test3" },
+  { id: 4, name: "test4" },
+  { id: 5, name: "test5" },
+];
+
 function useStudySelector() {
   // list of choices
   const [faculties, setFaculties] = useState([]);
   // user selected
   const [selectedFaculty, setSelectedFaculty] = useState(null);
+
+  const [selectedStudyType, setSelectedStudyType] = useState(null);
 
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -37,7 +47,9 @@ function useStudySelector() {
   // fetches courses when the user selects a faculty
   useEffect(() => {
     async function getCourses() {
-      const response = await fetch(`/api/programs/${selectedFaculty.abbreviation}`);
+      const response = await fetch(
+        `/api/programs/${selectedFaculty.abbreviation}`,
+      );
       const data = await response.json();
 
       setCourses(
@@ -102,7 +114,11 @@ function useStudySelector() {
       );
     }
 
-    if (selectedFaculty !== null && selectedCourse !== null && selectedYear !== null) {
+    if (
+      selectedFaculty !== null &&
+      selectedCourse !== null &&
+      selectedYear !== null
+    ) {
       getGroups();
     }
   }, [selectedFaculty, selectedCourse, selectedYear]);
@@ -112,6 +128,9 @@ function useStudySelector() {
     faculties,
     selectedFaculty,
     setSelectedFaculty,
+    studyTypes,
+    selectedStudyType,
+    setSelectedStudyType,
     courses,
     selectedCourse,
     setSelectedCourse,

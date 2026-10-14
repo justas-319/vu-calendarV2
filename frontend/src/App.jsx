@@ -10,6 +10,9 @@ function App() {
   const {
     faculties,
     setSelectedFaculty,
+    studyTypes,
+    selectedStudyType,
+    setSelectedStudyType,
     courses,
     setSelectedCourse,
     years,
@@ -52,6 +55,14 @@ function App() {
                 placeholder="Search faculty..."
                 items={faculties}
                 onSelect={setSelectedFaculty}
+              />
+
+              <Listbox
+                label="Study type"
+                items={studyTypes}
+                value={selectedStudyType}
+                onChange={setSelectedStudyType}
+                placeholder="Select study type..."
               />
 
               <Combobox
