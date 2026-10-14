@@ -5,6 +5,7 @@ import Combobox from "./components/Combobox";
 import Listbox from "./components/Listbox";
 import Timetable from "./components/Timetable";
 import useStudySelector from "./hooks/useStudySelector";
+import useModuleSelector from "./hooks/useModuleSelector";
 
 function App() {
   const {
@@ -22,6 +23,13 @@ function App() {
     selectedGroup,
     setSelectedGroup,
   } = useStudySelector();
+
+  const {
+    moduleFaculties,
+    setSelectedModuleFaculty,
+    modules,
+    setSelectedModule,
+  } = useModuleSelector();
 
   const [message, setMessage] = useState("");
 
@@ -101,6 +109,21 @@ function App() {
           <div className="mt-3">
             <Box>
               <h4>Modules</h4>
+              <div className="py-2">
+                <Combobox
+                  label="Faculty"
+                  placeholder="Search faculty..."
+                  items={moduleFaculties}
+                  onSelect={setSelectedModuleFaculty}
+                />
+
+                <Combobox
+                  label="Module"
+                  placeholder="Search module..."
+                  items={modules}
+                  onSelect={setSelectedModule}
+                />
+              </div>
             </Box>
           </div>
         </div>
