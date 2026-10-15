@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react";
 
-const moduleFaculties = [
-  { id: 1, name: "faculty1" },
-  { id: 2, name: "faculty2" },
-  { id: 3, name: "faculty3" },
-  { id: 4, name: "faculty4" },
-  { id: 5, name: "faculty5" },
-];
-
 const modules = [
   { id: 1, name: "module1" },
   { id: 2, name: "module2" },
@@ -17,11 +9,31 @@ const modules = [
 ];
 
 function useModuleSelector() {
+  const [moduleFaculties, setModuleFaculties] = useState([]);
   const [selectedModuleFaculty, setSelectedModuleFaculty] = useState(null);
   const [selectedModule, setSelectedModule] = useState(null);
 
   // array of modules the user has added
   const [selectedModulesArray, setSelectedModulesArray] = useState([]);
+
+  // fetch faculty options one time, when the page first loads
+  useEffect(() => {
+    async function getModuleFaculties() {
+      const response = await fetch("/api/departments");
+      const data = await response.json();
+
+      // use abbreviation as id for combobox items
+      setModuleFaculties(
+        data.map((department) => ({
+          id: department.abbreviation,
+          name: department.name,
+          abbreviation: department.abbreviation,
+        })),
+      );
+    }
+
+    getModuleFaculties();
+  }, []);
 
   function addModule() {
     if (!selectedModule || !selectedModuleFaculty) {
@@ -41,6 +53,7 @@ function useModuleSelector() {
 
   return {
     moduleFaculties,
+    setModuleFaculties,
     selectedModuleFaculty,
     setSelectedModuleFaculty,
     modules,
