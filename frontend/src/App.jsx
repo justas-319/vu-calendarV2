@@ -4,115 +4,39 @@ import Box from "./components/Box";
 import Combobox from "./components/Combobox";
 import Listbox from "./components/Listbox";
 import Timetable from "./components/Timetable";
+import useStudySelector from "./hooks/useStudySelector";
+import useModuleSelector from "./hooks/useModuleSelector";
 
 function App() {
+  const {
+    faculties,
+    setSelectedFaculty,
+    studyTypes,
+    selectedStudyType,
+    setSelectedStudyType,
+    courses,
+    setSelectedCourse,
+    years,
+    selectedYear,
+    setSelectedYear,
+    groups,
+    selectedGroup,
+    setSelectedGroup,
+  } = useStudySelector();
+
+  const {
+    moduleFaculties,
+    selectedModuleFaculty,
+    setSelectedModuleFaculty,
+    modules,
+    selectedModule,
+    setSelectedModule,
+    selectedModulesArray,
+    addModule,
+    removeModule,
+  } = useModuleSelector();
+
   const [message, setMessage] = useState("");
-
-  // list of choices
-  const [faculties, setFaculties] = useState([]);
-  // user selected
-  const [faculty, setFaculty] = useState(null);
-
-  const [courses, setCourses] = useState([]);
-  const [course, setCourse] = useState(null);
-
-  const [years, setYears] = useState([]);
-  const [year, setYear] = useState(null);
-
-  const [groups, setGroups] = useState([]);
-  const [group, setGroup] = useState(null);
-
-  // fetch faculty options one time, when the page first loads
-  useEffect(() => {
-    async function getFaculties() {
-      const response = await fetch("/api/departments");
-      const data = await response.json();
-
-      // use abbreviation as id for combobox items
-      setFaculties(
-        data.map((department) => ({
-          id: department.abbreviation,
-          name: department.name,
-          abbreviation: department.abbreviation,
-        })),
-      );
-    }
-
-    getFaculties();
-  }, []);
-
-  // fetches courses when the user selects a faculty
-  useEffect(() => {
-    async function getCourses() {
-      const response = await fetch(`/api/programs/${faculty.abbreviation}`);
-      const data = await response.json();
-
-      setCourses(
-        data.map((course) => ({
-          id: course,
-          name: course,
-        })),
-      );
-    }
-
-    // so it doesnt request for /api/programs/null
-    if (faculty !== null) {
-      getCourses();
-    }
-  }, [faculty]);
-
-  // fetches years when the user selects a course
-  useEffect(() => {
-    async function getYears() {
-      const response = await fetch(
-        `/api/courses/${faculty.abbreviation}/${course.name}`,
-      );
-      const data = await response.json();
-
-      setYears(
-        data.map((year) => ({
-          id: year,
-          name: `${year}`,
-        })),
-      );
-    }
-
-    // we need both faculty and course to display years
-    if (faculty !== null && course !== null) {
-      getYears();
-    }
-  }, [faculty, course]);
-
-  // fetches groups when the user selects a year
-  useEffect(() => {
-    async function getGroups() {
-      // this only returns the first number instead of "1 Kursas", gives "1"
-      const courseNumber = year.id.split(" ")[0];
-
-      const response = await fetch(
-        `/api/groups/${faculty.abbreviation}/${course.name}/${courseNumber}`,
-      );
-
-      const data = await response.json();
-
-      setGroups(
-        data.map((group) => {
-          // takes the last 2 elements
-          // so "Bakalauro nuolatine, Programu sistemos 1 Kursas 2 Grupe" turns into "2 Grupe"
-          const groupName = group.split(" ").slice(-2).join(" ");
-
-          return {
-            id: groupName,
-            name: groupName,
-          };
-        }),
-      );
-    }
-
-    if (faculty !== null && course !== null && year !== null) {
-      getGroups();
-    }
-  }, [faculty, course, year]);
 
   useEffect(() => {
     async function getMessage() {
@@ -143,14 +67,22 @@ function App() {
                 label="Faculty"
                 placeholder="Search faculty..."
                 items={faculties}
-                onSelect={setFaculty}
+                onSelect={setSelectedFaculty}
+              />
+
+              <Listbox
+                label="Study type"
+                items={studyTypes}
+                value={selectedStudyType}
+                onChange={setSelectedStudyType}
+                placeholder="Select study type..."
               />
 
               <Combobox
                 label="Course"
                 placeholder="Search course..."
                 items={courses}
-                onSelect={setCourse}
+                onSelect={setSelectedCourse}
               />
 
               {/* makes year and group be next to each other */}
@@ -159,8 +91,8 @@ function App() {
                   <Listbox
                     label="Year"
                     items={years}
-                    value={year}
-                    onChange={setYear}
+                    value={selectedYear}
+                    onChange={setSelectedYear}
                     placeholder="Select year..."
                   />
                 </div>
@@ -169,8 +101,8 @@ function App() {
                   <Listbox
                     label="Group"
                     items={groups}
-                    value={group}
-                    onChange={setGroup}
+                    value={selectedGroup}
+                    onChange={setSelectedGroup}
                     placeholder="Select group..."
                   />
                 </div>
@@ -182,6 +114,30 @@ function App() {
           <div className="mt-3">
             <Box>
               <h4>Modules</h4>
+              <div className="py-2">
+                <Combobox
+                  label="Faculty"
+                  placeholder="Search faculty..."
+                  items={moduleFaculties}
+                  onSelect={setSelectedModuleFaculty}
+                />
+
+                <Combobox
+                  label="Module"
+                  placeholder="Search module..."
+                  items={modules}
+                  onSelect={setSelectedModule}
+                />
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={addModule}
+                  disabled={!selectedModuleFaculty || !selectedModule}
+                >
+                  Add module
+                </button>
+              </div>
             </Box>
           </div>
         </div>
@@ -194,7 +150,25 @@ function App() {
 
       {/* bottom: selected modules - view your modules and remove them */}
       <div className="card">
-        <div className="card-body py-2">Selected modules:</div>
+        <div className="card-body py-2 d-flex align-items-center gap-2">
+          Selected modules:
+          {selectedModulesArray.map((module, index) => (
+            <div
+              key={index}
+              className="border rounded px-2 d-flex align-items-center gap-2"
+            >
+              {module.name}
+
+              <button
+                type="button"
+                className="btn text-danger p-0 border-0"
+                onClick={() => removeModule(index)}
+              >
+                X
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
