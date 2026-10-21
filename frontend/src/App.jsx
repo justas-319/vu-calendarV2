@@ -22,6 +22,7 @@ function App() {
     groups,
     selectedGroup,
     setSelectedGroup,
+    lectures,
   } = useStudySelector();
 
   const {
@@ -36,16 +37,15 @@ function App() {
     removeModule,
   } = useModuleSelector();
 
-  const [message, setMessage] = useState("");
+  //const [lectures, setLectures] = useState([]);
 
   useEffect(() => {
-    async function getMessage() {
-      const response = await fetch("/api/message");
-      const data = await response.text();
-      setMessage(data);
+    async function getLectures() {
+      const response = await fetch("/api/timetable/demo");
+      setLectures(await response.json());
     }
 
-    getMessage();
+    getLectures();
   }, []);
 
   return (
@@ -144,7 +144,7 @@ function App() {
 
         {/* right: timetable */}
         <div className="col-md-9">
-          <Timetable message={message} />
+          <Timetable lectures={lectures} />
         </div>
       </div>
 

@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 
-const studyTypes = [
-  { id: 1, name: "studyType1" },
-  { id: 2, name: "studyType2" },
-  { id: 3, name: "studyType3" },
-  { id: 4, name: "studyType4" },
-  { id: 5, name: "studyType5" },
-];
-
 function useStudySelector() {
   // list of choices
   const [faculties, setFaculties] = useState([]);
   // user selected
   const [selectedFaculty, setSelectedFaculty] = useState(null);
+
+  const [studyTypes, setStudyTypes] = useState([]);
 
   const [selectedStudyType, setSelectedStudyType] = useState(null);
 
@@ -24,6 +18,8 @@ function useStudySelector() {
 
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
+
+  const [lectures, setLectures] = useState([]);
 
   // fetch faculty options one time, when the page first loads
   useEffect(() => {
@@ -42,6 +38,18 @@ function useStudySelector() {
     }
 
     getFaculties();
+  }, []);
+
+  // fetch study type options one time, when the page first loads
+  useEffect(() => {
+    async function getStudyTypes() {
+      const response = await fetch("/api/study-types");
+      const data = await response.json();
+
+      setStudyTypes(data);
+    }
+
+    getStudyTypes();
   }, []);
 
   // fetches courses when the user selects a faculty
@@ -101,16 +109,11 @@ function useStudySelector() {
       const data = await response.json();
 
       setGroups(
-        data.map((group) => {
-          // takes the last 2 elements
-          // so "Bakalauro nuolatine, Programu sistemos 1 Kursas 2 Grupe" turns into "2 Grupe"
-          const groupName = group.split(" ").slice(-2).join(" ");
-
-          return {
-            id: groupName,
-            name: groupName,
-          };
-        }),
+        data.map((group) => ({
+          id: group.url,
+          // "Bakalauro nuolatine, Programu sistemos 1 Kursas 2 Grupe" -> "2 Grupe"
+          name: group.name.split(" ").slice(-2).join(" "),
+        })),
       );
     }
 
@@ -122,6 +125,47 @@ function useStudySelector() {
       getGroups();
     }
   }, [selectedFaculty, selectedCourse, selectedYear]);
+
+  // fetches the timetable when the user selects a group
+  useEffect(() => {
+    async function getLectures() {
+      const params = new URLSearchParams({
+        department: selectedFaculty.abbreviation,
+        program: selectedCourse.name,
+        course: selectedYear.id.split(" ")[0],
+        group: selectedGroup.name,
+      });
+
+      const response = await fetch(`/api/timetable?${params}`);
+      setLectures(await response.json());
+    }
+
+    if (
+      selectedFaculty !== null &&
+      selectedCourse !== null &&
+      selectedYear !== null &&
+      selectedGroup !== null
+    ) {
+      getLectures();
+    } else {
+      setLectures([]);
+    }
+  }, [selectedFaculty, selectedCourse, selectedYear, selectedGroup]);
+
+  /*
+  useEffect(() => {
+  async function getLectures() {
+    const response = await fetch(
+      `/api/timetable?groupUrl=${encodeURIComponent(selectedGroup.id)}`,
+    );
+    setLectures(await response.json());
+  }
+
+  if (selectedGroup !== null) {
+    getLectures();
+  }
+}, [selectedGroup]);
+*/
 
   // give App access to the states and setters
   return {
@@ -140,6 +184,7 @@ function useStudySelector() {
     groups,
     selectedGroup,
     setSelectedGroup,
+    lectures,
   };
 }
 

@@ -87,7 +87,22 @@ static async Task<string> GetGroups(string department, string programName, strin
         groups.Add(item.GroupName);
     }
 
-    return JsonSerializer.Serialize(groups);
+    return JsonSerializer.Serialize(
+        groupResponse.GroupsList.Select(group => new { name = group.GroupName, url = group.Url })
+);
+}
+
+// TODO: parse `content` into Lecture records.
+static async Task<List<Lecture>> GetLectures(string groupUrl, HttpClient httpClient)
+{
+    var response = await httpClient.GetAsync(groupUrl);
+    response.EnsureSuccessStatusCode();
+
+    string content = await response.Content.ReadAsStringAsync();
+
+    List<Lecture> lectures = [];
+
+    return lectures;
 }
 
 HttpClient mainApi = new()
@@ -130,5 +145,67 @@ app.MapGet("/api/groups/{department}/{programName}/{course}", async (string depa
 {
     return await GetGroups(department, programName, course, mainApi);
 });
+
+
+app.MapGet("/api/study-types", () =>
+{
+    return Enum.GetValues<StudyType>().Select(type => new
+    {
+        id = (int)type,
+        name = type.ToString()
+    });
+});
+
+// Temporary sample data until real lectures are parsed from the VU API
+app.MapGet("/api/timetable", (string department, string program, string course, string group) =>
+{
+    Timetable timetable = new() { Owner = group };
+
+    if (DemoTimetables.Matches(department, program, course))
+    {
+        foreach (Lecture lecture in DemoTimetables.ForGroup(group))
+        {
+            timetable.Add(lecture);
+        }
+    }
+
+    // timetable enumerates in chronological order (IEnumerable + IComparable)
+    return timetable.Select(lecture => new
+    {
+        lecture.Module,
+        lecture.Room,
+        day = lecture.Slot.Day.ToString(),
+        start = lecture.Slot.Start.ToString("HH:mm"),
+        end = lecture.Slot.End.ToString("HH:mm"),
+        clashes = timetable.Any(other => other != lecture && other.Slot.Overlaps(lecture.Slot))
+    });
+});
+
+
+/*
+app.MapGet("/api/timetable", async (string groupUrl) =>
+{
+    Timetable timetable = new();
+    List<object> result = [];
+
+    foreach (Lecture lecture in await GetLectures(groupUrl, mainApi))
+    {
+        bool clashes = timetable.Overlaps(lecture);
+        timetable.Add(lecture);
+
+        result.Add(new
+        {
+            lecture.Module,
+            lecture.Room,
+            day = lecture.Slot.Day.ToString(),
+            start = lecture.Slot.Start.ToString("HH:mm"),
+            end = lecture.Slot.End.ToString("HH:mm"),
+            clashes
+        });
+    }
+
+    return result;
+});
+*/
 
 app.Run();
