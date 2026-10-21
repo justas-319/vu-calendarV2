@@ -141,4 +141,28 @@ app.MapGet("/api/study-types", () =>
     });
 });
 
+// Temporary sample data until real lectures are parsed from the VU API
+app.MapGet("/api/timetable/demo", () =>
+{
+    Timetable timetable = new() { Owner = "demo" };
+
+    List<Lecture> sample =
+    [
+        new("Programming", "Room 101", new TimeSlot(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(9, 30))),
+        new("Databases", "Room 202", new TimeSlot(DayOfWeek.Monday, new TimeOnly(9, 0), new TimeOnly(10, 30))),
+        new("Algorithms", "Room 305", new TimeSlot(DayOfWeek.Wednesday, new TimeOnly(12, 0), new TimeOnly(13, 30)))
+    ];
+
+    List<object> result = [];
+
+    foreach (Lecture lecture in sample)
+    {
+        bool clashes = timetable.Overlaps(lecture);
+        timetable.Add(lecture);
+        result.Add(new { lecture.Module, lecture.Room, day = lecture.Slot.Day.ToString(), start = lecture.Slot.Start.ToString("HH:mm"), end = lecture.Slot.End.ToString("HH:mm"), clashes });
+    }
+
+    return result;
+});
+
 app.Run();
