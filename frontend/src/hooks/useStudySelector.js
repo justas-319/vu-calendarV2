@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 
-const studyTypes = [
-  { id: 1, name: "studyType1" },
-  { id: 2, name: "studyType2" },
-  { id: 3, name: "studyType3" },
-  { id: 4, name: "studyType4" },
-  { id: 5, name: "studyType5" },
-];
-
 function useStudySelector() {
   // list of choices
   const [faculties, setFaculties] = useState([]);
   // user selected
   const [selectedFaculty, setSelectedFaculty] = useState(null);
+
+  const [studyTypes, setStudyTypes] = useState([]);
 
   const [selectedStudyType, setSelectedStudyType] = useState(null);
 
@@ -42,6 +36,18 @@ function useStudySelector() {
     }
 
     getFaculties();
+  }, []);
+
+  // fetch study type options one time, when the page first loads
+  useEffect(() => {
+    async function getStudyTypes() {
+      const response = await fetch("/api/study-types");
+      const data = await response.json();
+
+      setStudyTypes(data);
+    }
+
+    getStudyTypes();
   }, []);
 
   // fetches courses when the user selects a faculty

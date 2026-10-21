@@ -131,4 +131,14 @@ app.MapGet("/api/groups/{department}/{programName}/{course}", async (string depa
     return await GetGroups(department, programName, course, mainApi);
 });
 
+
+app.MapGet("/api/study-types", () =>
+{
+    return Enum.GetValues<StudyType>().Select(type => new
+    {
+        id = (int)type,
+        name = type.ToString()
+    });
+});
+
 app.Run();
