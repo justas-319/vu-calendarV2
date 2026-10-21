@@ -44,6 +44,7 @@ static async Task<string> GetPrograms(string department, HttpClient httpClient)
 
     Programs programResponse = JsonSerializer.Deserialize<Programs>(jsonString);
     List<string> programs = new List<string>();
+    programResponse.ProgramsList.RemoveAt(0);
 
     foreach (List<string?> item in programResponse.ProgramsList)
     {
@@ -65,6 +66,7 @@ static async Task<string> GetCourses(string department, string programName, Http
 
     Course courseResponse = JsonSerializer.Deserialize<Course>(jsonString);
     List<string> courses = new List<string>();
+    courseResponse.Courses.RemoveAt(0);
 
     foreach (Object[] item in courseResponse.Courses)
     {
