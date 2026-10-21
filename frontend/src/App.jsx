@@ -22,6 +22,7 @@ function App() {
     groups,
     selectedGroup,
     setSelectedGroup,
+    lectures,
   } = useStudySelector();
 
   const {
@@ -36,7 +37,7 @@ function App() {
     removeModule,
   } = useModuleSelector();
 
-  const [lectures, setLectures] = useState([]);
+  //const [lectures, setLectures] = useState([]);
 
   useEffect(() => {
     async function getLectures() {
