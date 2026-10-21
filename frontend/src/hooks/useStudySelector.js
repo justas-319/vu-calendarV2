@@ -18,7 +18,7 @@ function useStudySelector() {
 
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  
+
   const [lectures, setLectures] = useState([]);
 
   // fetch faculty options one time, when the page first loads

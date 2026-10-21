@@ -48,7 +48,6 @@ function App() {
     getLectures();
   }, []);
 
-
   return (
     <div className="container-fluid p-3">
       {/* 
