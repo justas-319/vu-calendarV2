@@ -2,7 +2,7 @@ enum StudyType
 {
     Bachelor = 1,
     Master = 2,
-    Integrated = 3,
-    Doctoral = 4,
-    Residency = 5
+    Integrated = 6,
+    Doctoral = 7,
+    Residency = 8
 }
