@@ -177,7 +177,7 @@ app.MapGet("/api/timetable", (string department, string program, string course, 
         day = lecture.Slot.Day.ToString(),
         start = lecture.Slot.Start.ToString("HH:mm"),
         end = lecture.Slot.End.ToString("HH:mm"),
-        clashes = timetable.Any(other => other != lecture && other.Slot.Overlaps(lecture.Slot))
+        clashes = timetable.HasClash(lecture)
     });
 });
 
