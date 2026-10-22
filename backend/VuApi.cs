@@ -102,13 +102,17 @@ static class VuApi
     internal static async Task<List<Lecture>> GetLectures(string department, string programName, string course, string group, HttpClient httpClient)
     {
         var groupFullName = programName.Replace(' ', '-') + "-" + course + "k" + "-" + group[0] + "gr-2026";
-        Console.WriteLine($"{department}/ajax_fullcalendar_events/{groupFullName}/group/321/?start={StartOfWeek(DateTime.Today).ToString("s")}&end={StartOfWeek(DateTime.Today).AddDays(7).AddTicks(-1).ToString("s")}");
-        var response = await httpClient.GetAsync($"{department}/ajax_fullcalendar_events/{Normalize(groupFullName)}/group/321/?start={StartOfWeek(DateTime.Today).ToString("s")}&end={StartOfWeek(DateTime.Today).AddDays(7).AddTicks(-1).ToString("s")}");
+        DateTime weekStart = StartOfWeek(DateTime.Today);
+        DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
+
+        var response = await httpClient.GetAsync(
+            $"{department}/ajax_fullcalendar_events/{Normalize(groupFullName)}/group/321/?start={weekStart.ToString("s")}&end={weekEnd.ToString("s")}"
+        );
         response.EnsureSuccessStatusCode();
 
         string content = await response.Content.ReadAsStringAsync();
         Events events = JsonSerializer.Deserialize<Events>(content);
-        Console.WriteLine("parsed");
+
         List<Lecture> lectures = [];
         AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
         AngleSharp.IBrowsingContext context = AngleSharp.BrowsingContext.New(config);
@@ -118,9 +122,15 @@ static class VuApi
             string module = document.QuerySelector("a").TextContent;
             string room = document.QuerySelector("br").NextSibling.TextContent;
 
-            lectures.Add(new Lecture(module, room, new TimeSlot(item.Start.DayOfWeek, TimeOnly.FromDateTime(item.Start), TimeOnly.FromDateTime(item.End))));
+            TimeSlot slot = new(
+                item.Start.DayOfWeek,
+                TimeOnly.FromDateTime(item.Start),
+                TimeOnly.FromDateTime(item.End)
+            );
+
+            lectures.Add(new Lecture(module, room, slot));
         }
-        Console.WriteLine("final");
+
         return lectures;
     }
 
