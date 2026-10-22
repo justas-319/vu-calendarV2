@@ -71,16 +71,14 @@ static class VuApi
         string jsonString = await response.Content.ReadAsStringAsync();
 
         Groups groupResponse = JsonSerializer.Deserialize<Groups>(jsonString);
-        List<string> groups = new List<string>();
-
-        foreach (Group item in groupResponse.GroupsList)
-        {
-            groups.Add(item.GroupName);
-        }
 
         return JsonSerializer.Serialize(
-            groupResponse.GroupsList.Select(group => new { name = group.GroupName, url = group.Url })
-    );
+            groupResponse.GroupsList.Select(group => new
+            {
+                name = group.GroupName,
+                url = group.Url
+            })
+        );
     }
 
     // TODO: parse `content` into Lecture records.

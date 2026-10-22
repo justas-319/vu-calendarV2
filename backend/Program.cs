@@ -15,7 +15,6 @@ List<Department> departments = await VuApi.GetDepartments(mainApi);
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapGet("/api/message", () => { return "message from c#"; });
 app.MapGet("/api/departments", () =>
 {
     return departments.Select(department => new
@@ -25,7 +24,10 @@ app.MapGet("/api/departments", () =>
     });
 });
 
-app.MapGet("/api/programs/{department}", async (string department) => { return await VuApi.GetPrograms(department, mainApi); });
+app.MapGet("/api/programs/{department}", async (string department) =>
+{
+    return await VuApi.GetPrograms(department, mainApi);
+});
 
 // program name is expected to use + instead of space
 app.MapGet("/api/courses/{department}/{programName}", async (string department, string programName) =>
@@ -38,7 +40,6 @@ app.MapGet("/api/groups/{department}/{programName}/{course}", async (string depa
 {
     return await VuApi.GetGroups(department, programName, course, mainApi);
 });
-
 
 app.MapGet("/api/study-types", () =>
 {
