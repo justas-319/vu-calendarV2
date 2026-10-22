@@ -1,3 +1,7 @@
+body {
+  background-color: #f0f0f6;
+}
+
 .combobox {
   width: var(--input-width);
   max-height: 200px;
