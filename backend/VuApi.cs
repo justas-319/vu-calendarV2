@@ -90,13 +90,14 @@ static class VuApi
         DateTime weekStart = StartOfWeek(DateTime.Today);
         DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
 
-        var response = await httpClient.GetAsync(
+        using var response = await httpClient.GetAsync(
             $"{department}/ajax_fullcalendar_events/{Normalize(groupFullName)}/group/321/?start={weekStart.ToString("s")}&end={weekEnd.ToString("s")}"
         );
         response.EnsureSuccessStatusCode();
 
-        string content = await response.Content.ReadAsStringAsync();
-        Events events = JsonSerializer.Deserialize<Events>(content);
+        // read the response as a stream and automatically dispose of it when done
+        using Stream content = await response.Content.ReadAsStreamAsync();
+        Events events = await JsonSerializer.DeserializeAsync<Events>(content);
 
         List<Lecture> lectures = [];
         AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
