@@ -19,21 +19,6 @@ static class VuApi
         return departments;
     }
 
-    internal static string GetDepartmentAbbreviations(List<Department> departments)
-    {
-        List<string> departmentAbbreviations = new List<string>();
-
-        foreach (Department department in departments)
-        {
-            if (department.AbbreviationLt != null)
-            {
-                departmentAbbreviations.Add(department.AbbreviationLt.ToLower());
-            }
-        }
-
-        return JsonSerializer.Serialize(departmentAbbreviations);
-    }
-
     // [TODO] filter out first element "Studiju programa" and empty elements "" 
     internal static async Task<string> GetPrograms(string department, HttpClient httpClient)
     {
