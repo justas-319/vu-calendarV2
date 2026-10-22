@@ -1,5 +1,9 @@
 using System.Text.Json;
 
+using AngleSharp;
+using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
+
 static async Task<List<Department>> GetDepartments(HttpClient httpClient)
 {
     var response = await httpClient.GetAsync("api/department");
@@ -40,6 +44,7 @@ static async Task<string> GetPrograms(string department, HttpClient httpClient)
 
     Programs programResponse = JsonSerializer.Deserialize<Programs>(jsonString);
     List<string> programs = new List<string>();
+    programResponse.ProgramsList.RemoveAt(0);
 
     foreach (List<string?> item in programResponse.ProgramsList)
     {
@@ -61,6 +66,7 @@ static async Task<string> GetCourses(string department, string programName, Http
 
     Course courseResponse = JsonSerializer.Deserialize<Course>(jsonString);
     List<string> courses = new List<string>();
+    courseResponse.Courses.RemoveAt(0);
 
     foreach (Object[] item in courseResponse.Courses)
     {
@@ -92,16 +98,44 @@ static async Task<string> GetGroups(string department, string programName, strin
 );
 }
 
-// TODO: parse `content` into Lecture records.
-static async Task<List<Lecture>> GetLectures(string groupUrl, HttpClient httpClient)
+static DateTime StartOfWeek(DateTime date, DayOfWeek startOfWeek = DayOfWeek.Monday)
 {
-    var response = await httpClient.GetAsync(groupUrl);
+    int diff = (7 + (date.DayOfWeek - startOfWeek)) % 7;
+    return date.AddDays(-diff).Date;
+}
+
+static string Normalize(string text)
+{
+    string decomposed = text.Normalize(System.Text.NormalizationForm.FormD);
+    string withoutMarks = new string(
+        decomposed.Where(c => char.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray()
+    );
+    return withoutMarks.ToLowerInvariant();
+}
+
+// TODO: parse `content` into Lecture records.
+static async Task<List<Lecture>> GetLectures(string department, string programName, string course, string group, HttpClient httpClient)
+{
+    var groupFullName = programName.Replace(' ', '-') + "-" + course + "k" + "-" + group[0] + "gr-2026";
+    Console.WriteLine($"{department}/ajax_fullcalendar_events/{groupFullName}/group/321/?start={StartOfWeek(DateTime.Today).ToString("s")}&end={StartOfWeek(DateTime.Today).AddDays(7).AddTicks(-1).ToString("s")}");
+    var response = await httpClient.GetAsync($"{department}/ajax_fullcalendar_events/{Normalize(groupFullName)}/group/321/?start={StartOfWeek(DateTime.Today).ToString("s")}&end={StartOfWeek(DateTime.Today).AddDays(7).AddTicks(-1).ToString("s")}");
     response.EnsureSuccessStatusCode();
 
     string content = await response.Content.ReadAsStringAsync();
-
+    Events events = JsonSerializer.Deserialize<Events>(content);
+    Console.WriteLine("parsed");
     List<Lecture> lectures = [];
+    AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
+    AngleSharp.IBrowsingContext context = AngleSharp.BrowsingContext.New(config);
+    foreach (Event item in events.EventsList)
+    {
+        var document = await context.OpenAsync(req => req.Content(item.BigTitle));
+        string module = document.QuerySelector("a").TextContent;
+        string room = document.QuerySelector("br").NextSibling.TextContent;
 
+        lectures.Add(new Lecture(module, room, new TimeSlot(item.Start.DayOfWeek, TimeOnly.FromDateTime(item.Start), TimeOnly.FromDateTime(item.End))));
+    }
+    Console.WriteLine("final");
     return lectures;
 }
 
@@ -157,38 +191,39 @@ app.MapGet("/api/study-types", () =>
 });
 
 // Temporary sample data until real lectures are parsed from the VU API
-app.MapGet("/api/timetable", (string department, string program, string course, string group) =>
-{
-    Timetable timetable = new() { Owner = group };
+// app.MapGet("/api/timetable", (string department, string program, string course, string group) =>
+// {
+//     Timetable timetable = new() { Owner = group };
 
-    if (DemoTimetables.Matches(department, program, course))
-    {
-        foreach (Lecture lecture in DemoTimetables.ForGroup(group))
-        {
-            timetable.Add(lecture);
-        }
-    }
+//     if (DemoTimetables.Matches(department, program, course))
+//     {
+//         foreach (Lecture lecture in DemoTimetables.ForGroup(group))
+//         {
+//             timetable.Add(lecture);
+//         }
+//     }
 
-    // timetable enumerates in chronological order (IEnumerable + IComparable)
-    return timetable.Select(lecture => new
-    {
-        lecture.Module,
-        lecture.Room,
-        day = lecture.Slot.Day.ToString(),
-        start = lecture.Slot.Start.ToString("HH:mm"),
-        end = lecture.Slot.End.ToString("HH:mm"),
-        clashes = timetable.HasClash(lecture)
-    });
-});
+//     // timetable enumerates in chronological order (IEnumerable + IComparable)
+//     return timetable.Select(lecture => new
+//     {
+//         lecture.Module,
+//         lecture.Room,
+//         day = lecture.Slot.Day.ToString(),
+//         start = lecture.Slot.Start.ToString("HH:mm"),
+//         end = lecture.Slot.End.ToString("HH:mm"),
+//         clashes = timetable.Any(other => other != lecture && other.Slot.Overlaps(lecture.Slot))
+//     });
+// });
 
 
-/*
-app.MapGet("/api/timetable", async (string groupUrl) =>
+
+app.MapGet("/api/timetable/{department}/{programName}/{course}/{group}", async (string department, string programName, string course, string group) =>
 {
     Timetable timetable = new();
     List<object> result = [];
+    // Console.WriteLine("here");
 
-    foreach (Lecture lecture in await GetLectures(groupUrl, mainApi))
+    foreach (Lecture lecture in await GetLectures(department, programName, course, group, mainApi))
     {
         bool clashes = timetable.Overlaps(lecture);
         timetable.Add(lecture);
@@ -206,6 +241,6 @@ app.MapGet("/api/timetable", async (string groupUrl) =>
 
     return result;
 });
-*/
+
 
 app.Run();
