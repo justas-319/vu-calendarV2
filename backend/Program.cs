@@ -1,8 +1,6 @@
 using System.Text.Json;
 
 using AngleSharp;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
 
 static async Task<List<Department>> GetDepartments(HttpClient httpClient)
 {
@@ -190,38 +188,10 @@ app.MapGet("/api/study-types", () =>
     });
 });
 
-// Temporary sample data until real lectures are parsed from the VU API
-// app.MapGet("/api/timetable", (string department, string program, string course, string group) =>
-// {
-//     Timetable timetable = new() { Owner = group };
-
-//     if (DemoTimetables.Matches(department, program, course))
-//     {
-//         foreach (Lecture lecture in DemoTimetables.ForGroup(group))
-//         {
-//             timetable.Add(lecture);
-//         }
-//     }
-
-//     // timetable enumerates in chronological order (IEnumerable + IComparable)
-//     return timetable.Select(lecture => new
-//     {
-//         lecture.Module,
-//         lecture.Room,
-//         day = lecture.Slot.Day.ToString(),
-//         start = lecture.Slot.Start.ToString("HH:mm"),
-//         end = lecture.Slot.End.ToString("HH:mm"),
-//         clashes = timetable.Any(other => other != lecture && other.Slot.Overlaps(lecture.Slot))
-//     });
-// });
-
-
-
 app.MapGet("/api/timetable/{department}/{programName}/{course}/{group}", async (string department, string programName, string course, string group) =>
 {
     Timetable timetable = new();
     List<object> result = [];
-    // Console.WriteLine("here");
 
     foreach (Lecture lecture in await GetLectures(department, programName, course, group, mainApi))
     {
@@ -241,6 +211,5 @@ app.MapGet("/api/timetable/{department}/{programName}/{course}/{group}", async (
 
     return result;
 });
-
 
 app.Run();

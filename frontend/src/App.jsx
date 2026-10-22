@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import Box from "./components/Box";
 import Combobox from "./components/Combobox";
@@ -36,17 +35,6 @@ function App() {
     addModule,
     removeModule,
   } = useModuleSelector();
-
-  //const [lectures, setLectures] = useState([]);
-
-  useEffect(() => {
-    async function getLectures() {
-      const response = await fetch("/api/timetable/demo");
-      setLectures(await response.json());
-    }
-
-    getLectures();
-  }, []);
 
   return (
     <div className="container-fluid p-3">
