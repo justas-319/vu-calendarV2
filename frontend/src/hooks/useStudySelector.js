@@ -129,15 +129,15 @@ function useStudySelector() {
   // fetches the timetable when the user selects a group
   useEffect(() => {
     async function getLectures() {
-      const params = new URLSearchParams({
-        department: selectedFaculty.abbreviation,
-        program: selectedCourse.name,
-        course: selectedYear.id.split(" ")[0],
-        group: selectedGroup.name,
-      });
+      const courseNumber = selectedYear.id.split(" ")[0];
 
-      const response = await fetch(`/api/timetable?${params}`);
-      setLectures(await response.json());
+      const response = await fetch(
+        `/api/timetable/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}/${selectedGroup.name}`,
+      );
+
+      const data = await response.json();
+
+      setLectures(data);
     }
 
     if (
@@ -151,21 +151,6 @@ function useStudySelector() {
       setLectures([]);
     }
   }, [selectedFaculty, selectedCourse, selectedYear, selectedGroup]);
-
-  /*
-  useEffect(() => {
-  async function getLectures() {
-    const response = await fetch(
-      `/api/timetable?groupUrl=${encodeURIComponent(selectedGroup.id)}`,
-    );
-    setLectures(await response.json());
-  }
-
-  if (selectedGroup !== null) {
-    getLectures();
-  }
-}, [selectedGroup]);
-*/
 
   // give App access to the states and setters
   return {
