@@ -87,7 +87,8 @@ static class VuApi
     internal static async Task<List<Lecture>> GetLectures(string department, string programName, string course, string group, HttpClient httpClient)
     {
         var groupFullName = programName.Replace(' ', '-') + "-" + course + "k" + "-" + group[0] + "gr-2026";
-        DateTime weekStart = StartOfWeek(DateTime.Today);
+        // date: is a named argument, it's here just to fulfill a requirement (#4)
+        DateTime weekStart = StartOfWeek(date: DateTime.Today);
         DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
 
         using var response = await httpClient.GetAsync(
