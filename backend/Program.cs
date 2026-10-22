@@ -195,7 +195,7 @@ app.MapGet("/api/timetable/{department}/{programName}/{course}/{group}", async (
 
     foreach (Lecture lecture in await GetLectures(department, programName, course, group, mainApi))
     {
-        bool clashes = timetable.Overlaps(lecture);
+        bool clashes = timetable.HasClash(lecture);
         timetable.Add(lecture);
 
         result.Add(new
