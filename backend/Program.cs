@@ -41,13 +41,9 @@ app.MapGet("/api/groups/{department}/{programName}/{course}", async (string depa
     return await VuApi.GetGroups(department, programName, course, mainApi);
 });
 
-app.MapGet("/api/study-types", () =>
+app.MapGet("/api/study-types/{department}", async (string department) =>
 {
-    return Enum.GetValues<StudyType>().Select(type => new
-    {
-        id = (int)type,
-        name = type.ToString()
-    });
+    return await VuApi.GetStudyTypes(department, mainApi);
 });
 
 app.MapGet("/api/timetable/{department}/{programName}/{course}/{group}", async (string department, string programName, string course, string group) =>

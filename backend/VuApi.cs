@@ -19,6 +19,42 @@ static class VuApi
         return departments;
     }
 
+    internal static async Task<List<StudyType>> GetStudyTypes(string department, HttpClient httpClient)
+    {
+        using var response = await httpClient.GetAsync(department + "/");
+        response.EnsureSuccessStatusCode();
+
+        using Stream stream = await response.Content.ReadAsStreamAsync();
+
+        AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
+        AngleSharp.IBrowsingContext context = AngleSharp.BrowsingContext.New(config);
+        var document = await context.OpenAsync(req => req.Content(stream));
+
+        List<StudyType> studyTypes = [];
+
+        // selects all <option> fields inside #id_study_program_filter (the dropdown for study type)
+        var options = document.QuerySelectorAll("#id_study_program_filter option");
+
+        foreach (var option in options)
+        {
+            string? value = option.GetAttribute("value");
+
+            // writes value to id and skips fields with empty ids (placeholder text)
+            if (!int.TryParse(value, out int id))
+            {
+                continue;
+            }
+
+            studyTypes.Add(new StudyType
+            {
+                Id = id,
+                Name = option.TextContent.Trim()
+            });
+        }
+
+        return studyTypes;
+    }
+
     // [TODO] filter out first element "Studiju programa" and empty elements "" 
     internal static async Task<string> GetPrograms(string department, HttpClient httpClient)
     {
