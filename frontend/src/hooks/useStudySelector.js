@@ -139,8 +139,15 @@ function useStudySelector() {
     async function getLectures() {
       const courseNumber = selectedYear.id.split(" ")[0];
 
+      // selectedGroup.id stores the url like /mif/groups/duomenu-mokslas-i-3k-1gr-2026/
+      // this extracts "duomenu-mokslas-i-3k-1gr-2026"
+      const groupIdentifier = selectedGroup.id
+        .split("/")
+        .filter(Boolean)
+        .at(-1);
+
       const response = await fetch(
-        `/api/timetable/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}/${selectedGroup.name}`,
+        `/api/timetable/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}/${groupIdentifier}`,
       );
 
       const data = await response.json();

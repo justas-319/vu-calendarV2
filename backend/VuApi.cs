@@ -120,13 +120,12 @@ static class VuApi
     // TODO: parse `content` into Lecture records.
     internal static async Task<List<Lecture>> GetLectures(string department, string programName, string course, string group, HttpClient httpClient)
     {
-        var groupFullName = programName.Replace(' ', '-') + "-" + course + "k" + "-" + group[0] + "gr-2026";
         // date: is a named argument, it's here just to fulfill a requirement (#4)
         DateTime weekStart = StartOfWeek(date: DateTime.Today);
         DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
 
         using var response = await httpClient.GetAsync(
-            $"{department}/ajax_fullcalendar_events/{Normalize(groupFullName)}/group/321/?start={weekStart.ToString("s")}&end={weekEnd.ToString("s")}"
+            $"{department}/ajax_fullcalendar_events/{group}/group/321/?start={weekStart.ToString("s")}&end={weekEnd.ToString("s")}"
         );
         response.EnsureSuccessStatusCode();
 
@@ -159,14 +158,5 @@ static class VuApi
     {
         int diff = (7 + (date.DayOfWeek - startOfWeek)) % 7;
         return date.AddDays(-diff).Date;
-    }
-
-    static string Normalize(string text)
-    {
-        string decomposed = text.Normalize(System.Text.NormalizationForm.FormD);
-        string withoutMarks = new string(
-            decomposed.Where(c => char.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray()
-        );
-        return withoutMarks.ToLowerInvariant();
     }
 }
