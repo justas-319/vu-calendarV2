@@ -7,7 +7,6 @@ function useStudySelector() {
   const [selectedFaculty, setSelectedFaculty] = useState(null);
 
   const [studyTypes, setStudyTypes] = useState([]);
-
   const [selectedStudyType, setSelectedStudyType] = useState(null);
 
   const [courses, setCourses] = useState([]);
@@ -40,17 +39,21 @@ function useStudySelector() {
     getFaculties();
   }, []);
 
-  // fetch study type options one time, when the page first loads
+  // fetch study types when the user selects a faculty
   useEffect(() => {
     async function getStudyTypes() {
-      const response = await fetch("/api/study-types");
+      const response = await fetch(
+        `/api/study-types/${selectedFaculty.abbreviation}`,
+      );
       const data = await response.json();
 
       setStudyTypes(data);
     }
 
-    getStudyTypes();
-  }, []);
+    if (selectedFaculty !== null) {
+      getStudyTypes();
+    }
+  }, [selectedFaculty]);
 
   // fetches courses when the user selects a faculty
   useEffect(() => {
