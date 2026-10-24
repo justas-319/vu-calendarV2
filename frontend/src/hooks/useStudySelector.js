@@ -7,7 +7,6 @@ function useStudySelector() {
   const [selectedFaculty, setSelectedFaculty] = useState(null);
 
   const [studyTypes, setStudyTypes] = useState([]);
-
   const [selectedStudyType, setSelectedStudyType] = useState(null);
 
   const [courses, setCourses] = useState([]);
@@ -40,23 +39,27 @@ function useStudySelector() {
     getFaculties();
   }, []);
 
-  // fetch study type options one time, when the page first loads
+  // fetch study types when the user selects a faculty
   useEffect(() => {
     async function getStudyTypes() {
-      const response = await fetch("/api/study-types");
+      const response = await fetch(
+        `/api/study-types/${selectedFaculty.abbreviation}`,
+      );
       const data = await response.json();
 
       setStudyTypes(data);
     }
 
-    getStudyTypes();
-  }, []);
+    if (selectedFaculty !== null) {
+      getStudyTypes();
+    }
+  }, [selectedFaculty]);
 
   // fetches courses when the user selects a faculty
   useEffect(() => {
     async function getCourses() {
       const response = await fetch(
-        `/api/programs/${selectedFaculty.abbreviation}`,
+        `/api/programs/${selectedFaculty.abbreviation}/${selectedStudyType.id}`,
       );
       const data = await response.json();
 
@@ -69,16 +72,16 @@ function useStudySelector() {
     }
 
     // so it doesnt request for /api/programs/null
-    if (selectedFaculty !== null) {
+    if (selectedFaculty !== null && selectedStudyType !== null) {
       getCourses();
     }
-  }, [selectedFaculty]);
+  }, [selectedFaculty, selectedStudyType]);
 
   // fetches years when the user selects a course
   useEffect(() => {
     async function getYears() {
       const response = await fetch(
-        `/api/courses/${selectedFaculty.abbreviation}/${selectedCourse.name}`,
+        `/api/courses/${selectedFaculty.abbreviation}/${selectedStudyType.id}/${selectedCourse.name}`,
       );
       const data = await response.json();
 
@@ -91,10 +94,14 @@ function useStudySelector() {
     }
 
     // we need both faculty and course to display years
-    if (selectedFaculty !== null && selectedCourse !== null) {
+    if (
+      selectedFaculty !== null &&
+      selectedCourse !== null &&
+      selectedStudyType !== null
+    ) {
       getYears();
     }
-  }, [selectedFaculty, selectedCourse]);
+  }, [selectedFaculty, selectedCourse, selectedStudyType]);
 
   // fetches groups when the user selects a year
   useEffect(() => {
@@ -103,7 +110,7 @@ function useStudySelector() {
       const courseNumber = selectedYear.id.split(" ")[0];
 
       const response = await fetch(
-        `/api/groups/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}`,
+        `/api/groups/${selectedFaculty.abbreviation}/${selectedStudyType.id}/${selectedCourse.name}/${courseNumber}`,
       );
 
       const data = await response.json();
@@ -120,19 +127,27 @@ function useStudySelector() {
     if (
       selectedFaculty !== null &&
       selectedCourse !== null &&
-      selectedYear !== null
+      selectedYear !== null &&
+      selectedStudyType !== null
     ) {
       getGroups();
     }
-  }, [selectedFaculty, selectedCourse, selectedYear]);
+  }, [selectedFaculty, selectedCourse, selectedYear, selectedStudyType]);
 
   // fetches the timetable when the user selects a group
   useEffect(() => {
     async function getLectures() {
       const courseNumber = selectedYear.id.split(" ")[0];
 
+      // selectedGroup.id stores the url like /mif/groups/duomenu-mokslas-i-3k-1gr-2026/
+      // this extracts "duomenu-mokslas-i-3k-1gr-2026"
+      const groupIdentifier = selectedGroup.id
+        .split("/")
+        .filter(Boolean)
+        .at(-1);
+
       const response = await fetch(
-        `/api/timetable/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}/${selectedGroup.name}`,
+        `/api/timetable/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}/${groupIdentifier}`,
       );
 
       const data = await response.json();

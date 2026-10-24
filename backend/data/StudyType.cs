@@ -1,8 +1,10 @@
-enum StudyType
+using System.Text.Json.Serialization;
+
+class StudyType
 {
-    Bachelor = 1,
-    Master = 2,
-    Integrated = 6,
-    Doctoral = 7,
-    Residency = 8
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
 }
