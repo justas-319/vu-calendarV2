@@ -59,7 +59,7 @@ function useStudySelector() {
   useEffect(() => {
     async function getCourses() {
       const response = await fetch(
-        `/api/programs/${selectedFaculty.abbreviation}`,
+        `/api/programs/${selectedFaculty.abbreviation}/${selectedStudyType.id}`,
       );
       const data = await response.json();
 
@@ -72,16 +72,16 @@ function useStudySelector() {
     }
 
     // so it doesnt request for /api/programs/null
-    if (selectedFaculty !== null) {
+    if (selectedFaculty !== null && selectedStudyType !== null) {
       getCourses();
     }
-  }, [selectedFaculty]);
+  }, [selectedFaculty, selectedStudyType]);
 
   // fetches years when the user selects a course
   useEffect(() => {
     async function getYears() {
       const response = await fetch(
-        `/api/courses/${selectedFaculty.abbreviation}/${selectedCourse.name}`,
+        `/api/courses/${selectedFaculty.abbreviation}/${selectedStudyType.id}/${selectedCourse.name}`,
       );
       const data = await response.json();
 
@@ -94,10 +94,14 @@ function useStudySelector() {
     }
 
     // we need both faculty and course to display years
-    if (selectedFaculty !== null && selectedCourse !== null) {
+    if (
+      selectedFaculty !== null &&
+      selectedCourse !== null &&
+      selectedStudyType !== null
+    ) {
       getYears();
     }
-  }, [selectedFaculty, selectedCourse]);
+  }, [selectedFaculty, selectedCourse, selectedStudyType]);
 
   // fetches groups when the user selects a year
   useEffect(() => {
@@ -106,7 +110,7 @@ function useStudySelector() {
       const courseNumber = selectedYear.id.split(" ")[0];
 
       const response = await fetch(
-        `/api/groups/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}`,
+        `/api/groups/${selectedFaculty.abbreviation}/${selectedStudyType.id}/${selectedCourse.name}/${courseNumber}`,
       );
 
       const data = await response.json();
@@ -123,11 +127,12 @@ function useStudySelector() {
     if (
       selectedFaculty !== null &&
       selectedCourse !== null &&
-      selectedYear !== null
+      selectedYear !== null &&
+      selectedStudyType !== null
     ) {
       getGroups();
     }
-  }, [selectedFaculty, selectedCourse, selectedYear]);
+  }, [selectedFaculty, selectedCourse, selectedYear, selectedStudyType]);
 
   // fetches the timetable when the user selects a group
   useEffect(() => {
