@@ -56,9 +56,9 @@ static class VuApi
     }
 
     // [TODO] filter out first element "Studiju programa" and empty elements "" 
-    internal static async Task<string> GetPrograms(string department, HttpClient httpClient)
+    internal static async Task<string> GetPrograms(string department, int studyTypeId, HttpClient httpClient)
     {
-        var response = await httpClient.GetAsync(department + "/ajax_program_select_choices/11/?study_type_id=1");
+        var response = await httpClient.GetAsync(department + "/ajax_program_select_choices/11/?study_type_id=" + studyTypeId);
         response.EnsureSuccessStatusCode();
 
         string jsonString = await response.Content.ReadAsStringAsync();
@@ -76,10 +76,10 @@ static class VuApi
     }
 
     // [TODO] filter out first element "Kursas"
-    internal static async Task<string> GetCourses(string department, string programName, HttpClient httpClient)
+    internal static async Task<string> GetCourses(string department, int studyTypeId, string programName, HttpClient httpClient)
     {
         var response = await httpClient.GetAsync(
-            $"{department}/ajax_course_select_choices/11/?study_type_id=1&study_program_name={programName}"
+            $"{department}/ajax_course_select_choices/11/?study_type_id={studyTypeId}&study_program_name={programName}"
         );
         response.EnsureSuccessStatusCode();
 
@@ -97,10 +97,10 @@ static class VuApi
         return JsonSerializer.Serialize(courses);
     }
 
-    internal static async Task<string> GetGroups(string department, string programName, string course, HttpClient httpClient)
+    internal static async Task<string> GetGroups(string department, int studyTypeId, string programName, string course, HttpClient httpClient)
     {
         var response = await httpClient.GetAsync(
-            $"{department}/ajax_filtered_groups/11/?study_type_id=1&study_program_name={programName}&course={course}&exams=False"
+            $"{department}/ajax_filtered_groups/11/?study_type_id={studyTypeId}&study_program_name={programName}&course={course}&exams=False"
         );
         response.EnsureSuccessStatusCode();
 
