@@ -24,30 +24,26 @@ app.MapGet("/api/departments", () =>
     });
 });
 
-app.MapGet("/api/programs/{department}", async (string department) =>
+app.MapGet("/api/programs/{department}/{studyTypeId}", async (string department, int studyTypeId) =>
 {
-    return await VuApi.GetPrograms(department, mainApi);
+    return await VuApi.GetPrograms(department, studyTypeId, mainApi);
 });
 
 // program name is expected to use + instead of space
-app.MapGet("/api/courses/{department}/{programName}", async (string department, string programName) =>
+app.MapGet("/api/courses/{department}/{studyTypeId}/{programName}", async (string department, int studyTypeId, string programName) =>
 {
-    return await VuApi.GetCourses(department, programName, mainApi);
+    return await VuApi.GetCourses(department, studyTypeId, programName, mainApi);
 });
 
 // course is just a number
-app.MapGet("/api/groups/{department}/{programName}/{course}", async (string department, string programName, string course) =>
+app.MapGet("/api/groups/{department}/{studyTypeId}/{programName}/{course}", async (string department, int studyTypeId, string programName, string course) =>
 {
-    return await VuApi.GetGroups(department, programName, course, mainApi);
+    return await VuApi.GetGroups(department, studyTypeId, programName, course, mainApi);
 });
 
-app.MapGet("/api/study-types", () =>
+app.MapGet("/api/study-types/{department}", async (string department) =>
 {
-    return Enum.GetValues<StudyType>().Select(type => new
-    {
-        id = (int)type,
-        name = type.ToString()
-    });
+    return await VuApi.GetStudyTypes(department, mainApi);
 });
 
 app.MapGet("/api/timetable/{department}/{programName}/{course}/{group}", async (string department, string programName, string course, string group) =>
