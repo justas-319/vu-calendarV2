@@ -118,7 +118,7 @@ static class VuApi
     }
 
     // TODO: parse `content` into Lecture records.
-    internal static async Task<List<Lecture>> GetLectures(string department, string programName, string course, string group, HttpClient httpClient)
+    internal static async Task<List<Lecture>> GetLectures(string department, string group, HttpClient httpClient)
     {
         // date: is a named argument, it's here just to fulfill a requirement (#4)
         DateTime weekStart = StartOfWeek(date: DateTime.Today);
@@ -136,11 +136,23 @@ static class VuApi
         List<Lecture> lectures = [];
         AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
         AngleSharp.IBrowsingContext context = AngleSharp.BrowsingContext.New(config);
+        string module = "";
+        string room = "";
         foreach (Event item in events.EventsList)
         {
             var document = await context.OpenAsync(req => req.Content(item.BigTitle));
-            string module = document.QuerySelector("a").TextContent;
-            string room = document.QuerySelector("br").NextSibling.TextContent;
+            try
+            {
+                module = document.QuerySelector("a").TextContent;
+                room = document.QuerySelector("br").NextSibling.TextContent;
+            }
+            catch (System.Exception)
+            {
+                module = item.BigTitle;
+                room = "";
+            }
+            
+            
 
             TimeSlot slot = new(
                 item.Start.DayOfWeek,
