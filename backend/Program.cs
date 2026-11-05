@@ -46,12 +46,12 @@ app.MapGet("/api/study-types/{department}", async (string department) =>
     return await VuApi.GetStudyTypes(department, mainApi);
 });
 
-app.MapGet("/api/timetable/{department}/{programName}/{course}/{group}", async (string department, string programName, string course, string group) =>
+app.MapGet("/api/timetable/{department}/{group}", async (string department, string group) =>
 {
     Timetable timetable = new();
     List<object> result = [];
 
-    foreach (Lecture lecture in await VuApi.GetLectures(department, programName, course, group, mainApi))
+    foreach (Lecture lecture in await VuApi.GetLectures(department, group, mainApi))
     {
         bool clashes = timetable.HasClash(lecture);
         timetable.Add(lecture);

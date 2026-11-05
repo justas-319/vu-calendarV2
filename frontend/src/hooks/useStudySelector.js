@@ -147,7 +147,7 @@ function useStudySelector() {
         .at(-1);
 
       const response = await fetch(
-        `/api/timetable/${selectedFaculty.abbreviation}/${selectedCourse.name}/${courseNumber}/${groupIdentifier}`,
+        `/api/timetable/${selectedFaculty.abbreviation}/${groupIdentifier}`,
       );
 
       const data = await response.json();
