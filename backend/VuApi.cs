@@ -152,15 +152,13 @@ static class VuApi
                 room = "";
             }
             
-            
-
             TimeSlot slot = new(
                 item.Start.DayOfWeek,
                 TimeOnly.FromDateTime(item.Start),
                 TimeOnly.FromDateTime(item.End)
             );
 
-            lectures.Add(new Lecture(module, room, slot));
+            lectures.Add(new Lecture(module, room, slot, item.ClassName));
         }
 
         return lectures;
