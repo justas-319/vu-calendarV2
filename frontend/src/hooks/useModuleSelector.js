@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 
-const modules = [
-  { id: 1, name: "module1" },
-  { id: 2, name: "module2" },
-  { id: 3, name: "module3" },
-  { id: 4, name: "module4" },
-  { id: 5, name: "module5" },
-];
+const moduleGroups = {
+  mif: "individualiuju-studiju-dalykas-modulis-2026-2",
+  evaf: "individualios-studijos-kitoms-kryptims-2026",
+  chgf: "individualiosios-studijos-2026-3",
+};
 
 function useModuleSelector() {
   const [moduleFaculties, setModuleFaculties] = useState([]);
   const [selectedModuleFaculty, setSelectedModuleFaculty] = useState(null);
+  const [modules, setModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState(null);
 
   // array of modules the user has added
@@ -35,13 +34,40 @@ function useModuleSelector() {
     getModuleFaculties();
   }, []);
 
-  function addModule() {
+  // fetch the modules when the user selects a faculty
+  useEffect(() => {
+    async function getModules() {
+      const department = selectedModuleFaculty.abbreviation;
+      const response = await fetch(
+        `/api/modules/${department}/${moduleGroups[department]}`,
+      );
+      setModules(await response.json());
+    }
+
+    setSelectedModule(null);
+    setModules([]);
+
+    if (
+      selectedModuleFaculty !== null &&
+      moduleGroups[selectedModuleFaculty.abbreviation]
+    ) {
+      getModules();
+    }
+  }, [selectedModuleFaculty]);
+
+  async function addModule() {
     if (!selectedModule || !selectedModuleFaculty) {
       return;
     }
 
+    const department = selectedModuleFaculty.abbreviation;
+    const response = await fetch(
+      `/api/module-lectures/${department}/${moduleGroups[department]}/${selectedModule.id}`,
+    );
+    const lectures = await response.json();
+
     setSelectedModulesArray((currentArray) => {
-      return currentArray.concat(selectedModule);
+      return currentArray.concat({ ...selectedModule, lectures });
     });
   }
 
@@ -50,6 +76,11 @@ function useModuleSelector() {
       return currentArray.filter((module, index) => index != indexToRemove);
     });
   }
+
+  // lectures of all added modules
+  const moduleLectures = selectedModulesArray.flatMap(
+    (module) => module.lectures,
+  );
 
   return {
     moduleFaculties,
@@ -60,6 +91,7 @@ function useModuleSelector() {
     selectedModule,
     setSelectedModule,
     selectedModulesArray,
+    moduleLectures,
     addModule,
     removeModule,
   };
