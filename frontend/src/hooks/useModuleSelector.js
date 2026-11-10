@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
 
 const moduleGroups = {
-  mif: "individualiuju-studiju-dalykas-modulis-2026-2",
-  evaf: "individualios-studijos-kitoms-kryptims-2026",
   chgf: "individualiosios-studijos-2026-3",
+  evaf: "individualios-studijos-kitoms-kryptims-2026",
+  flf: "individualiuju-studiju-dalykas-modulis-2026",
+  fsf: "individualiuju-studiju-dalykas-modulis-bak-tvarkar",
+  ff: "",
+  gmc: "individualiosios-studijos-2026-4",
+  knf: "individualiuju-studiju-dalykai-modulis-2026",
+  kf: "individualiosios-studijos-2026",
+  mif: "individualiuju-studiju-dalykas-modulis-2026-2",
+  mf: "individualios-ir-bendrosios-universitetines-stud-3",
+  sa: "individualiosios-studijos-2026-2",
+  tspmi: "",
+  tf: "bendrieji-universitetiniu-studiju-dalykai-moduli-7",
+  vm: "individualiosios-studijos-lietuviu-kalba-2026",
 };
 
 function useModuleSelector() {
