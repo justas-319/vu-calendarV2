@@ -24,7 +24,9 @@ function Timetable({ lectures }) {
                       {lecture.start}–{lecture.end}
                     </div>
                     <div>{lecture.module}</div>
-                    <div className="text-muted">{lecture.room}</div>
+                    <div className="text-muted">
+                      {lecture.room || "Room not provided"}
+                    </div>
                   </div>
                 ))}
             </div>

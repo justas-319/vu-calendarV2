@@ -144,15 +144,23 @@ static class VuApi
             try
             {
                 module = document.QuerySelector("a").TextContent;
-                room = document.QuerySelector("br").NextSibling.TextContent;
+                room = "";
+
+                var roomsHtml = document.QuerySelector("a").GetAttribute("data-rooms");
+
+                if (!string.IsNullOrWhiteSpace(roomsHtml))
+                {
+                    var roomsDocument = await context.OpenAsync(req => req.Content(roomsHtml));
+                    // remove the "Patalpos:" label to keep only the room information
+                    roomsDocument.QuerySelector("strong").Remove();
+                    room = roomsDocument.Body.TextContent.Trim();
+                }
             }
             catch (System.Exception)
             {
                 module = item.BigTitle;
                 room = "";
             }
-            
-            
 
             TimeSlot slot = new(
                 item.Start.DayOfWeek,
