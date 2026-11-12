@@ -70,4 +70,37 @@ app.MapGet("/api/timetable/{department}/{group}", async (string department, stri
     return result;
 });
 
+// one entry per subject in a faculty's individual studies group
+app.MapGet("/api/modules/{department}/{group}", async (string department, string group) =>
+{
+    List<Lecture> lectures = await VuApi.GetLectures(department, group, mainApi);
+
+    return lectures
+        .GroupBy(lecture => lecture.ModuleId)
+        .Select(subject => new
+        {
+            id = subject.Key,
+            name = subject.First().Module
+        })
+        .OrderBy(module => module.name);
+});
+
+// every lecture of one module (all its groups and subgroups for now)
+app.MapGet("/api/module-lectures/{department}/{group}/{moduleId}", async (string department, string group, string moduleId) =>
+{
+    List<Lecture> lectures = await VuApi.GetLectures(department, group, mainApi);
+
+    return lectures
+        .Where(lecture => lecture.ModuleId == moduleId)
+        .Order()
+        .Select(lecture => new
+        {
+            lecture.Module,
+            lecture.Room,
+            day = lecture.Slot.Day.ToString(),
+            start = lecture.Slot.Start.ToString("HH:mm"),
+            end = lecture.Slot.End.ToString("HH:mm")
+        });
+});
+
 app.Run();

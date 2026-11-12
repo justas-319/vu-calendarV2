@@ -32,6 +32,7 @@ function App() {
     selectedModule,
     setSelectedModule,
     selectedModulesArray,
+    moduleLectures,
     addModule,
     removeModule,
   } = useModuleSelector();
@@ -132,7 +133,7 @@ function App() {
 
         {/* right: timetable */}
         <div className="col-md-9">
-          <Timetable lectures={lectures} />
+          <Timetable lectures={[...lectures, ...moduleLectures]} />
         </div>
       </div>
 

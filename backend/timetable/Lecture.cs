@@ -1,4 +1,4 @@
-record Lecture(string Module, string Room, TimeSlot Slot) : IComparable<Lecture>
+record Lecture(string Module, string Room, TimeSlot Slot, string ModuleId = "") : IComparable<Lecture>
 {
     public int CompareTo(Lecture? other)
     {
