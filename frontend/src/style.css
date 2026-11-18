@@ -34,13 +34,14 @@ body {
 }
 
 .calendar-day {
-  display: grid;
-  grid-template-rows: repeat(30, 27px);
+  position: relative;
   min-width: 0;
   border-left: 1px solid #ddd;
 }
 
 .calendar-lecture {
-  margin: 2px;
+  position: absolute;
+  left: 2px;
+  right: 2px;
   overflow: hidden;
 }

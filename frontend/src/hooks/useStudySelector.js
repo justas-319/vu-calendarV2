@@ -22,7 +22,7 @@ function useStudySelector() {
 
   function changeFaculty(faculty) {
     setSelectedFaculty(faculty);
-    
+
     setSelectedStudyType(null);
     setSelectedCourse(null);
     setSelectedYear(null);

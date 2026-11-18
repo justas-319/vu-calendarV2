@@ -1,5 +1,8 @@
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
+// how many pixels each 30min interval is
+const SLOT_HEIGHT = 27;
+
 const times = [];
 // creates an array from 7-22 with 30 min intervals
 for (let hour = 7; hour < 22; hour++) {
@@ -10,7 +13,7 @@ for (let hour = 7; hour < 22; hour++) {
 function timeToMinutes(time) {
   const [hours, minutes] = time.split(":");
   const mins = Number(hours) * 60 + Number(minutes);
-  
+
   return mins;
 }
 
@@ -22,10 +25,7 @@ function timeToRow(time) {
   const minutesPassed = minutes - startTimeInMinutes;
   const slotsPassed = minutesPassed / interval;
 
-  // CSS Grid lines start at 1
-  const row = slotsPassed + 1;
-
-  return row;
+  return slotsPassed;
 }
 
 function Timetable({ lectures }) {
@@ -56,11 +56,14 @@ function Timetable({ lectures }) {
                 .map((lecture, index) => (
                   <div
                     key={index}
-                    className={`calendar-lecture border rounded p-2 mb-2 small ${
+                    className={`calendar-lecture border rounded p-2 small ${
                       lecture.clashes ? "border-danger bg-danger-subtle" : ""
                     }`}
                     style={{
-                      gridRow: `${timeToRow(lecture.start)} / ${timeToRow(lecture.end)}`,
+                      top: timeToRow(lecture.start) * SLOT_HEIGHT,
+                      height:
+                        (timeToRow(lecture.end) - timeToRow(lecture.start)) *
+                        SLOT_HEIGHT,
                     }}
                   >
                     <div className="fw-bold">
