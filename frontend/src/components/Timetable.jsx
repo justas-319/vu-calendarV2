@@ -7,11 +7,31 @@ for (let hour = 7; hour < 22; hour++) {
   times.push(`${hour}:30`);
 }
 
+function timeToMinutes(time) {
+  const [hours, minutes] = time.split(":");
+  const mins = Number(hours) * 60 + Number(minutes);
+  
+  return mins;
+}
+
+function timeToRow(time) {
+  const startTimeInMinutes = 420; // 07 hour
+  const interval = 30;
+
+  const minutes = timeToMinutes(time);
+  const minutesPassed = minutes - startTimeInMinutes;
+  const slotsPassed = minutesPassed / interval;
+
+  // CSS Grid lines start at 1
+  const row = slotsPassed + 1;
+
+  return row;
+}
+
 function Timetable({ lectures }) {
   return (
     <div className="card h-100">
       <div className="card-body">
-
         <div className="calendar-header">
           <div>Time</div>
 
@@ -36,9 +56,12 @@ function Timetable({ lectures }) {
                 .map((lecture, index) => (
                   <div
                     key={index}
-                    className={`border rounded p-2 mb-2 small ${
+                    className={`calendar-lecture border rounded p-2 mb-2 small ${
                       lecture.clashes ? "border-danger bg-danger-subtle" : ""
                     }`}
+                    style={{
+                      gridRow: `${timeToRow(lecture.start)} / ${timeToRow(lecture.end)}`,
+                    }}
                   >
                     <div className="fw-bold">
                       {lecture.start}–{lecture.end}
@@ -52,7 +75,6 @@ function Timetable({ lectures }) {
             </div>
           ))}
         </div>
-        
       </div>
     </div>
   );
