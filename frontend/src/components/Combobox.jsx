@@ -6,8 +6,7 @@ import {
 } from "@headlessui/react";
 import { useState } from "react";
 
-function SearchSelect({ label, placeholder, items, onSelect }) {
-  const [selectedItem, setSelectedItem] = useState(null);
+function SearchSelect({ label, placeholder, items, value, onSelect }) {
   const [query, setQuery] = useState("");
 
   const filteredItems =
@@ -17,19 +16,14 @@ function SearchSelect({ label, placeholder, items, onSelect }) {
           item.name.toLowerCase().includes(query.toLowerCase()),
         );
 
-  function handleChange(item) {
-    setSelectedItem(item);
-    onSelect(item);
-  }
-
   return (
     <div className="mb-2">
       <div className="form-label mb-1">{label}</div>
 
       <Combobox
         immediate
-        value={selectedItem}
-        onChange={handleChange}
+        value={value}
+        onChange={onSelect}
         onClose={() => setQuery("")}
       >
         <ComboboxInput

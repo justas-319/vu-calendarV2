@@ -9,11 +9,13 @@ import useModuleSelector from "./hooks/useModuleSelector";
 function App() {
   const {
     faculties,
+    selectedFaculty,
     setSelectedFaculty,
     studyTypes,
     selectedStudyType,
     setSelectedStudyType,
     courses,
+    selectedCourse,
     setSelectedCourse,
     years,
     selectedYear,
@@ -56,6 +58,7 @@ function App() {
                 label="Faculty"
                 placeholder="Search faculty..."
                 items={faculties}
+                value={selectedFaculty}
                 onSelect={setSelectedFaculty}
               />
 
@@ -71,6 +74,7 @@ function App() {
                 label="Course"
                 placeholder="Search course..."
                 items={courses}
+                value={selectedCourse}
                 onSelect={setSelectedCourse}
               />
 
@@ -108,6 +112,7 @@ function App() {
                   label="Faculty"
                   placeholder="Search faculty..."
                   items={moduleFaculties}
+                  value={selectedModuleFaculty}
                   onSelect={setSelectedModuleFaculty}
                 />
 
@@ -115,6 +120,7 @@ function App() {
                   label="Module"
                   placeholder="Search module..."
                   items={modules}
+                  value={selectedModule}
                   onSelect={setSelectedModule}
                 />
 
