@@ -13,3 +13,27 @@ body {
   max-height: 200px;
   overflow-y: auto;
 }
+
+.calendar-header,
+.calendar-body {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr 1fr 1fr 1fr;
+}
+
+.calendar-header {
+  text-align: center;
+  font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.time-slot {
+  height: 27px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.calendar-day {
+  min-width: 0;
+  border-left: 1px solid #ddd;
+}
