@@ -86,11 +86,11 @@ function Timetable({ lectures }) {
                       ...getHorizontalPosition(lecture, lectures),
                     }}
                   >
-                    <div className="fw-bold">
+                    <div className="small">
                       {lecture.start}–{lecture.end}
                     </div>
-                    <div>{lecture.module}</div>
-                    <div className="text-muted">
+                    <div className="fw-bold">{lecture.module}</div>
+                    <div className="text-muted small">
                       {lecture.room || "Room not provided"}
                     </div>
                   </div>
