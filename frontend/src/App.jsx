@@ -10,19 +10,19 @@ function App() {
   const {
     faculties,
     selectedFaculty,
-    setSelectedFaculty,
+    changeFaculty,
     studyTypes,
     selectedStudyType,
-    setSelectedStudyType,
+    changeStudyType,
     courses,
     selectedCourse,
-    setSelectedCourse,
+    changeCourse,
     years,
     selectedYear,
-    setSelectedYear,
+    changeYear,
     groups,
     selectedGroup,
-    setSelectedGroup,
+    changeGroup,
     lectures,
   } = useStudySelector();
 
@@ -59,14 +59,14 @@ function App() {
                 placeholder="Search faculty..."
                 items={faculties}
                 value={selectedFaculty}
-                onSelect={setSelectedFaculty}
+                onSelect={changeFaculty}
               />
 
               <Listbox
                 label="Study type"
                 items={studyTypes}
                 value={selectedStudyType}
-                onChange={setSelectedStudyType}
+                onChange={changeStudyType}
                 placeholder="Select study type..."
               />
 
@@ -75,7 +75,7 @@ function App() {
                 placeholder="Search course..."
                 items={courses}
                 value={selectedCourse}
-                onSelect={setSelectedCourse}
+                onSelect={changeCourse}
               />
 
               {/* makes year and group be next to each other */}
@@ -85,7 +85,7 @@ function App() {
                     label="Year"
                     items={years}
                     value={selectedYear}
-                    onChange={setSelectedYear}
+                    onChange={changeYear}
                     placeholder="Select year..."
                   />
                 </div>
@@ -95,7 +95,7 @@ function App() {
                     label="Group"
                     items={groups}
                     value={selectedGroup}
-                    onChange={setSelectedGroup}
+                    onChange={changeGroup}
                     placeholder="Select group..."
                   />
                 </div>
