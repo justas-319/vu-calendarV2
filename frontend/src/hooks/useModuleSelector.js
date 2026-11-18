@@ -78,7 +78,21 @@ function useModuleSelector() {
     const lectures = await response.json();
 
     setSelectedModulesArray((currentArray) => {
-      return currentArray.concat({ ...selectedModule, lectures });
+      // checks department as well since a different faculty may have the same id
+      const alreadyAdded = currentArray.some(
+        (module) =>
+          module.id === selectedModule.id && module.department === department,
+      );
+
+      if (alreadyAdded) {
+        return currentArray;
+      }
+
+      return currentArray.concat({
+        ...selectedModule,
+        department,
+        lectures,
+      });
     });
   }
 
