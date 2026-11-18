@@ -20,6 +20,55 @@ function useStudySelector() {
 
   const [lectures, setLectures] = useState([]);
 
+  function changeFaculty(faculty) {
+    setSelectedFaculty(faculty);
+    
+    setSelectedStudyType(null);
+    setSelectedCourse(null);
+    setSelectedYear(null);
+    setSelectedGroup(null);
+    setStudyTypes([]);
+    setCourses([]);
+    setYears([]);
+    setGroups([]);
+    setLectures([]);
+  }
+
+  function changeStudyType(studyType) {
+    setSelectedStudyType(studyType);
+
+    setSelectedCourse(null);
+    setSelectedYear(null);
+    setSelectedGroup(null);
+    setCourses([]);
+    setYears([]);
+    setGroups([]);
+    setLectures([]);
+  }
+
+  function changeCourse(course) {
+    setSelectedCourse(course);
+
+    setSelectedYear(null);
+    setSelectedGroup(null);
+    setYears([]);
+    setGroups([]);
+    setLectures([]);
+  }
+
+  function changeYear(year) {
+    setSelectedYear(year);
+
+    setSelectedGroup(null);
+    setGroups([]);
+    setLectures([]);
+  }
+
+  function changeGroup(group) {
+    setSelectedGroup(group);
+    setLectures([]);
+  }
+
   // fetch faculty options one time, when the page first loads
   useEffect(() => {
     async function getFaculties() {
@@ -171,19 +220,19 @@ function useStudySelector() {
   return {
     faculties,
     selectedFaculty,
-    setSelectedFaculty,
+    changeFaculty,
     studyTypes,
     selectedStudyType,
-    setSelectedStudyType,
+    changeStudyType,
     courses,
     selectedCourse,
-    setSelectedCourse,
+    changeCourse,
     years,
     selectedYear,
-    setSelectedYear,
+    changeYear,
     groups,
     selectedGroup,
-    setSelectedGroup,
+    changeGroup,
     lectures,
   };
 }

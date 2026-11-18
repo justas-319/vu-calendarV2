@@ -9,18 +9,20 @@ import useModuleSelector from "./hooks/useModuleSelector";
 function App() {
   const {
     faculties,
-    setSelectedFaculty,
+    selectedFaculty,
+    changeFaculty,
     studyTypes,
     selectedStudyType,
-    setSelectedStudyType,
+    changeStudyType,
     courses,
-    setSelectedCourse,
+    selectedCourse,
+    changeCourse,
     years,
     selectedYear,
-    setSelectedYear,
+    changeYear,
     groups,
     selectedGroup,
-    setSelectedGroup,
+    changeGroup,
     lectures,
   } = useStudySelector();
 
@@ -56,14 +58,15 @@ function App() {
                 label="Faculty"
                 placeholder="Search faculty..."
                 items={faculties}
-                onSelect={setSelectedFaculty}
+                value={selectedFaculty}
+                onSelect={changeFaculty}
               />
 
               <Listbox
                 label="Study type"
                 items={studyTypes}
                 value={selectedStudyType}
-                onChange={setSelectedStudyType}
+                onChange={changeStudyType}
                 placeholder="Select study type..."
               />
 
@@ -71,7 +74,8 @@ function App() {
                 label="Course"
                 placeholder="Search course..."
                 items={courses}
-                onSelect={setSelectedCourse}
+                value={selectedCourse}
+                onSelect={changeCourse}
               />
 
               {/* makes year and group be next to each other */}
@@ -81,7 +85,7 @@ function App() {
                     label="Year"
                     items={years}
                     value={selectedYear}
-                    onChange={setSelectedYear}
+                    onChange={changeYear}
                     placeholder="Select year..."
                   />
                 </div>
@@ -91,7 +95,7 @@ function App() {
                     label="Group"
                     items={groups}
                     value={selectedGroup}
-                    onChange={setSelectedGroup}
+                    onChange={changeGroup}
                     placeholder="Select group..."
                   />
                 </div>
@@ -108,6 +112,7 @@ function App() {
                   label="Faculty"
                   placeholder="Search faculty..."
                   items={moduleFaculties}
+                  value={selectedModuleFaculty}
                   onSelect={setSelectedModuleFaculty}
                 />
 
@@ -115,6 +120,7 @@ function App() {
                   label="Module"
                   placeholder="Search module..."
                   items={modules}
+                  value={selectedModule}
                   onSelect={setSelectedModule}
                 />
 
