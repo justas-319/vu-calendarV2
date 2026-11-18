@@ -26,6 +26,13 @@ function useModuleSelector() {
   // array of modules the user has added
   const [selectedModulesArray, setSelectedModulesArray] = useState([]);
 
+  // checks department as well since a different faculty may have the same id
+  const alreadyAdded = selectedModulesArray.some(
+    (module) =>
+      module.id === selectedModule.id &&
+      module.department === selectedModuleFaculty.abbreviation,
+  );
+
   // fetch faculty options one time, when the page first loads
   useEffect(() => {
     async function getModuleFaculties() {
@@ -67,7 +74,7 @@ function useModuleSelector() {
   }, [selectedModuleFaculty]);
 
   async function addModule() {
-    if (!selectedModule || !selectedModuleFaculty) {
+    if (!selectedModule || !selectedModuleFaculty || alreadyAdded) {
       return;
     }
 
@@ -78,7 +85,21 @@ function useModuleSelector() {
     const lectures = await response.json();
 
     setSelectedModulesArray((currentArray) => {
-      return currentArray.concat({ ...selectedModule, lectures });
+      // checks department as well since a different faculty may have the same id
+      const isDuplicate = currentArray.some(
+        (module) =>
+          module.id === selectedModule.id && module.department === department,
+      );
+
+      if (isDuplicate) {
+        return currentArray;
+      }
+
+      return currentArray.concat({
+        ...selectedModule,
+        department,
+        lectures,
+      });
     });
   }
 
@@ -103,6 +124,7 @@ function useModuleSelector() {
     setSelectedModule,
     selectedModulesArray,
     moduleLectures,
+    alreadyAdded,
     addModule,
     removeModule,
   };

@@ -35,6 +35,7 @@ function App() {
     setSelectedModule,
     selectedModulesArray,
     moduleLectures,
+    alreadyAdded,
     addModule,
     removeModule,
   } = useModuleSelector();
@@ -128,7 +129,9 @@ function App() {
                   type="button"
                   className="btn btn-primary"
                   onClick={addModule}
-                  disabled={!selectedModuleFaculty || !selectedModule}
+                  disabled={
+                    !selectedModuleFaculty || !selectedModule || alreadyAdded
+                  }
                 >
                   Add module
                 </button>
