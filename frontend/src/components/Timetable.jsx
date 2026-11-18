@@ -1,6 +1,7 @@
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 // how many pixels each 30min interval is
+// if you change this you also have to change styles.css .time-slot height
 const SLOT_HEIGHT = 27;
 
 const times = [];
@@ -26,6 +27,24 @@ function timeToRow(time) {
   const slotsPassed = minutesPassed / interval;
 
   return slotsPassed;
+}
+
+function getHorizontalPosition(lecture, lectures) {
+  // currently it only finds lectures that overlap with the exact same time and day
+  const matching = lectures.filter(
+    (other) =>
+      other.day === lecture.day &&
+      other.start === lecture.start &&
+      other.end === lecture.end,
+  );
+
+  const width = 100 / matching.length;
+  const column = matching.indexOf(lecture);
+
+  return {
+    left: `${column * width}%`,
+    width: `${width}%`,
+  };
 }
 
 function Timetable({ lectures }) {
@@ -64,6 +83,7 @@ function Timetable({ lectures }) {
                       height:
                         (timeToRow(lecture.end) - timeToRow(lecture.start)) *
                         SLOT_HEIGHT,
+                      ...getHorizontalPosition(lecture, lectures),
                     }}
                   >
                     <div className="fw-bold">

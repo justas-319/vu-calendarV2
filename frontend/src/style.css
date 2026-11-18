@@ -41,7 +41,5 @@ body {
 
 .calendar-lecture {
   position: absolute;
-  left: 2px;
-  right: 2px;
   overflow: hidden;
 }
