@@ -4,19 +4,24 @@ using AngleSharp;
 
 static class VuApi
 {
-    internal static async Task<List<Department>> GetDepartments(HttpClient httpClient)
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        var response = await httpClient.GetAsync("api/department");
+        PropertyNameCaseInsensitive = true
+    };
+
+    private static async Task<T> GetJson<T>(string url, HttpClient httpClient)
+    {
+        using var response = await httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
 
-        string jsonString = await response.Content.ReadAsStringAsync();
+        using Stream stream = await response.Content.ReadAsStreamAsync();
 
-        List<Department> departments = JsonSerializer.Deserialize<List<Department>>(
-            jsonString,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-        );
+        return await JsonSerializer.DeserializeAsync<T>(stream, JsonOptions);
+    }
 
-        return departments;
+    internal static async Task<List<Department>> GetDepartments(HttpClient httpClient)
+    {
+        return await GetJson<List<Department>>("api/department", httpClient);
     }
 
     internal static async Task<List<StudyType>> GetStudyTypes(string department, HttpClient httpClient)
@@ -58,12 +63,8 @@ static class VuApi
     // [TODO] filter out first element "Studiju programa" and empty elements "" 
     internal static async Task<string> GetPrograms(string department, int studyTypeId, HttpClient httpClient)
     {
-        var response = await httpClient.GetAsync(department + "/ajax_program_select_choices/11/?study_type_id=" + studyTypeId);
-        response.EnsureSuccessStatusCode();
+        Programs programResponse = await GetJson<Programs>(department + "/ajax_program_select_choices/11/?study_type_id=" + studyTypeId, httpClient);
 
-        string jsonString = await response.Content.ReadAsStringAsync();
-
-        Programs programResponse = JsonSerializer.Deserialize<Programs>(jsonString);
         List<string> programs = new List<string>();
         programResponse.ProgramsList.RemoveAt(0);
 
@@ -78,14 +79,8 @@ static class VuApi
     // [TODO] filter out first element "Kursas"
     internal static async Task<string> GetCourses(string department, int studyTypeId, string programName, HttpClient httpClient)
     {
-        var response = await httpClient.GetAsync(
-            $"{department}/ajax_course_select_choices/11/?study_type_id={studyTypeId}&study_program_name={programName}"
-        );
-        response.EnsureSuccessStatusCode();
-
-        string jsonString = await response.Content.ReadAsStringAsync();
-
-        Course courseResponse = JsonSerializer.Deserialize<Course>(jsonString);
+        Course courseResponse = await GetJson<Course>($"{department}/ajax_course_select_choices/11/?study_type_id={studyTypeId}&study_program_name={programName}", httpClient);
+        
         List<string> courses = new List<string>();
         courseResponse.Courses.RemoveAt(0);
 
@@ -99,14 +94,7 @@ static class VuApi
 
     internal static async Task<string> GetGroups(string department, int studyTypeId, string programName, string course, HttpClient httpClient)
     {
-        var response = await httpClient.GetAsync(
-            $"{department}/ajax_filtered_groups/11/?study_type_id={studyTypeId}&study_program_name={programName}&course={course}&exams=False"
-        );
-        response.EnsureSuccessStatusCode();
-
-        string jsonString = await response.Content.ReadAsStringAsync();
-
-        Groups groupResponse = JsonSerializer.Deserialize<Groups>(jsonString);
+        Groups groupResponse = await GetJson<Groups>($"{department}/ajax_filtered_groups/11/?study_type_id={studyTypeId}&study_program_name={programName}&course={course}&exams=False", httpClient);
 
         return JsonSerializer.Serialize(
             groupResponse.GroupsList.Select(group => new
@@ -124,14 +112,7 @@ static class VuApi
         DateTime weekStart = StartOfWeek(date: DateTime.Today);
         DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
 
-        using var response = await httpClient.GetAsync(
-            $"{department}/ajax_fullcalendar_events/{group}/group/321/?start={weekStart.ToString("s")}&end={weekEnd.ToString("s")}"
-        );
-        response.EnsureSuccessStatusCode();
-
-        // read the response as a stream and automatically dispose of it when done
-        using Stream content = await response.Content.ReadAsStreamAsync();
-        Events events = await JsonSerializer.DeserializeAsync<Events>(content);
+        Events events = await GetJson<Events>($"{department}/ajax_fullcalendar_events/{group}/group/321/?start={weekStart.ToString("s")}&end={weekEnd.ToString("s")}", httpClient);
 
         List<Lecture> lectures = [];
         AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
