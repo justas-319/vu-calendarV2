@@ -166,7 +166,7 @@ function Timetable({ lectures, moduleLectures }) {
                 .map((lecture, index) => (
                   <div
                     key={index}
-                    className={`calendar-lecture border rounded p-2 small ${
+                    className={`calendar-lecture border p-2 small ${
                       lecture.clashes ? "border-danger bg-danger-subtle" : ""
                     }`}
                     style={{
@@ -197,7 +197,7 @@ function Timetable({ lectures, moduleLectures }) {
                 .map((moduleLecture, index) => (
                   <div
                     key={index}
-                    className="calendar-lecture module-lecture border rounded p-2 small"
+                    className="calendar-lecture module-lecture border p-2 small"
                     style={{
                       top: timeToRow(moduleLecture.start) * SLOT_HEIGHT,
                       height:
