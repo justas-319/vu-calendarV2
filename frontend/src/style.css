@@ -65,3 +65,8 @@ body {
 .calendar-lecture.module-lecture {
   background-color: #f1edff;
 }
+
+.module-lecture {
+  left: 0;
+  width: 100%;
+}
