@@ -148,6 +148,22 @@ function Timetable({ lectures, moduleLectures }) {
                           {moduleLecture.room || "Room not provided"}
                         </div>
 
+                        <details className="mt-2">
+                          <summary className="text-danger">
+                            Overlaps with:
+                          </summary>
+
+                          {getModuleOverlaps(
+                            moduleLecture,
+                            lectures,
+                            moduleLectures,
+                          ).map((current, index) => (
+                            <div key={index} className="mt-1">
+                              {current.module}
+                            </div>
+                          ))}
+                        </details>
+
                         {index < overlappingModules.length - 1 && (
                           <hr className="my-2" />
                         )}
@@ -214,7 +230,7 @@ function Timetable({ lectures, moduleLectures }) {
                         (timeToRow(moduleLecture.end) -
                           timeToRow(moduleLecture.start)) *
                         SLOT_HEIGHT,
-                        ...getHorizontalPosition(moduleLecture, moduleLectures),
+                      ...getHorizontalPosition(moduleLecture, moduleLectures),
                     }}
                   >
                     <div className="small">
