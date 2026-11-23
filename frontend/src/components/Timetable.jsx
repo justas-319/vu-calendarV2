@@ -115,7 +115,7 @@ function Timetable({ lectures, moduleLectures }) {
                 <button
                   type="button"
                   className="overlap-button"
-                  onClick={() => setOpenDay(day)}
+                  onClick={() => setOpenDay(openDay === day ? null : day)}
                 >
                   <span className={className}>{label}</span>
                 </button>
