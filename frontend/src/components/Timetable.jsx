@@ -1,3 +1,4 @@
+import { useState } from "react";
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 // how many pixels each 30min interval is
@@ -73,6 +74,8 @@ function getHorizontalPosition(lecture, lectures) {
 }
 
 function Timetable({ lectures, moduleLectures }) {
+  const [openDay, setOpenDay] = useState(null);
+
   return (
     <div className="card h-100">
       <div className="card-body">
@@ -80,7 +83,7 @@ function Timetable({ lectures, moduleLectures }) {
           <div>Time</div>
 
           {days.map((day) => {
-            let count = 0;
+            const overlappingModules = [];
 
             for (const moduleLecture of moduleLectures) {
               if (
@@ -88,9 +91,11 @@ function Timetable({ lectures, moduleLectures }) {
                 getModuleOverlaps(moduleLecture, lectures, moduleLectures)
                   .length > 0
               ) {
-                count++;
+                overlappingModules.push(moduleLecture);
               }
             }
+
+            const count = overlappingModules.length;
 
             let label = day;
             let className = "";
@@ -101,9 +106,45 @@ function Timetable({ lectures, moduleLectures }) {
                 "border border-danger bg-danger-subtle text-danger rounded px-2 py-1";
             }
 
+            if (count === 0) {
+              return <div key={day}>{label}</div>;
+            }
+
             return (
-              <div key={day}>
-                <span className={className}>{label}</span>
+              <div key={day} className="position-relative">
+                <button
+                  type="button"
+                  className="overlap-button"
+                  onClick={() => setOpenDay(day)}
+                >
+                  <span className={className}>{label}</span>
+                </button>
+
+                {openDay === day && (
+                  <div className="overlap-popup border rounded p-3 bg-body small fw-normal text-start">
+                    <button
+                      type="button"
+                      className="btn-close float-end"
+                      onClick={() => setOpenDay(null)}
+                    />
+
+                    {overlappingModules.map((moduleLecture, index) => (
+                      <div key={index}>
+                        <div className="small">
+                          {moduleLecture.start}–{moduleLecture.end}
+                        </div>
+                        <div className="fw-bold">{moduleLecture.module}</div>
+                        <div className="text-muted small">
+                          {moduleLecture.room || "Room not provided"}
+                        </div>
+
+                        {index < overlappingModules.length - 1 && (
+                          <hr className="my-2" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
