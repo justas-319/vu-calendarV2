@@ -79,9 +79,34 @@ function Timetable({ lectures, moduleLectures }) {
         <div className="calendar-header">
           <div>Time</div>
 
-          {days.map((day) => (
-            <div key={day}>{day}</div>
-          ))}
+          {days.map((day) => {
+            let count = 0;
+
+            for (const moduleLecture of moduleLectures) {
+              if (
+                moduleLecture.day === day &&
+                getModuleOverlaps(moduleLecture, lectures, moduleLectures)
+                  .length > 0
+              ) {
+                count++;
+              }
+            }
+
+            let label = day;
+            let className = "";
+
+            if (count > 0) {
+              label = `${day} \u00B7 ${count} overlaps`;
+              className =
+                "border border-danger bg-danger-subtle text-danger rounded px-2 py-1";
+            }
+
+            return (
+              <div key={day}>
+                <span className={className}>{label}</span>
+              </div>
+            );
+          })}
         </div>
 
         <div className="calendar-body">
