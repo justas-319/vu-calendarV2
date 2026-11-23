@@ -18,6 +18,31 @@ function timeToMinutes(time) {
   return mins;
 }
 
+function overlaps(a, b) {
+  return (
+    a.day === b.day &&
+    timeToMinutes(a.start) < timeToMinutes(b.end) &&
+    timeToMinutes(b.start) < timeToMinutes(a.end)
+  );
+}
+
+function getModuleOverlaps(moduleLecture, lectures, moduleLectures) {
+  const allLectures = lectures.concat(moduleLectures);
+  const overlapping = [];
+
+  for (const current of allLectures) {
+    if (current === moduleLecture) {
+      continue;
+    }
+
+    if (overlaps(moduleLecture, current)) {
+      overlapping.push(current);
+    }
+  }
+
+  return overlapping;
+}
+
 function timeToRow(time) {
   const startTimeInMinutes = 420; // 07 hour
   const interval = 30;
@@ -92,6 +117,35 @@ function Timetable({ lectures, moduleLectures }) {
                     <div className="fw-bold">{lecture.module}</div>
                     <div className="text-muted small">
                       {lecture.room || "Room not provided"}
+                    </div>
+                  </div>
+                ))}
+
+              {moduleLectures
+                .filter((moduleLecture) => moduleLecture.day === day)
+                .filter(
+                  (moduleLecture) =>
+                    getModuleOverlaps(moduleLecture, lectures, moduleLectures)
+                      .length === 0,
+                )
+                .map((moduleLecture, index) => (
+                  <div
+                    key={index}
+                    className="calendar-lecture module-lecture border rounded p-2 small"
+                    style={{
+                      top: timeToRow(moduleLecture.start) * SLOT_HEIGHT,
+                      height:
+                        (timeToRow(moduleLecture.end) -
+                          timeToRow(moduleLecture.start)) *
+                        SLOT_HEIGHT,
+                    }}
+                  >
+                    <div className="small">
+                      {moduleLecture.start}–{moduleLecture.end}
+                    </div>
+                    <div className="fw-bold">{moduleLecture.module}</div>
+                    <div className="text-muted small">
+                      {moduleLecture.room || "Room not provided"}
                     </div>
                   </div>
                 ))}
