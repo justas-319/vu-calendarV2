@@ -57,3 +57,11 @@ body {
   text-align: left;
   min-width: 300px;
 }
+
+.calendar-lecture {
+  background-color: #eaf2ff;
+}
+
+.calendar-lecture.module-lecture {
+  background-color: #f1edff;
+}
