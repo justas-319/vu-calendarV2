@@ -139,7 +139,7 @@ function App() {
 
         {/* right: timetable */}
         <div className="col-md-9">
-          <Timetable lectures={[...lectures, ...moduleLectures]} />
+          <Timetable lectures={lectures} moduleLectures={moduleLectures} />
         </div>
       </div>
 

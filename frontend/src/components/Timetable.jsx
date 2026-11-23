@@ -47,7 +47,7 @@ function getHorizontalPosition(lecture, lectures) {
   };
 }
 
-function Timetable({ lectures }) {
+function Timetable({ lectures, moduleLectures }) {
   return (
     <div className="card h-100">
       <div className="card-body">
