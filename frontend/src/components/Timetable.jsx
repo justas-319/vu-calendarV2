@@ -132,12 +132,20 @@ function Timetable({ lectures, moduleLectures }) {
 
                 {openDay === day && (
                   <div className="overlap-popup border rounded p-3 bg-body small fw-normal text-start">
-                    <button
-                      type="button"
-                      className="btn-close float-end"
-                      onClick={() => setOpenDay(null)}
-                    />
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <div className="fw-bold">
+                        {day} {"\u00B7"} {count} overlaps
+                      </div>
 
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setOpenDay(null)}
+                        aria-label="Close"
+                      />
+                    </div>
+
+                    <hr className="my-2" />
                     {overlappingModules.map((moduleLecture, index) => (
                       <div key={index}>
                         <div className="small">
