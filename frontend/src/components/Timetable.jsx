@@ -36,6 +36,16 @@ function getModuleOverlaps(moduleLecture, lectures, moduleLectures) {
       continue;
     }
 
+    // same module at the same time, so not a conflict
+    if (
+      current.module === moduleLecture.module &&
+      current.day === moduleLecture.day &&
+      current.start === moduleLecture.start &&
+      current.end === moduleLecture.end
+    ) {
+      continue;
+    }
+
     if (overlaps(moduleLecture, current)) {
       overlapping.push(current);
     }
@@ -204,6 +214,7 @@ function Timetable({ lectures, moduleLectures }) {
                         (timeToRow(moduleLecture.end) -
                           timeToRow(moduleLecture.start)) *
                         SLOT_HEIGHT,
+                        ...getHorizontalPosition(moduleLecture, moduleLectures),
                     }}
                   >
                     <div className="small">
