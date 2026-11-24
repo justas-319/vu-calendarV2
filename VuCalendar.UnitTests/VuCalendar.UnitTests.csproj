@@ -24,8 +24,4 @@
     <ProjectReference Include="..\backend\vu-calendarV2.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <InternalsVisibleTo Include="VuCalendar.UnitTests" />
-  </ItemGroup>
-
 </Project>

@@ -10,4 +10,8 @@
     <PackageReference Include="AngleSharp" Version="1.8.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="VuCalendar.UnitTests" />
+  </ItemGroup>
+
 </Project>
