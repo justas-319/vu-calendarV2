@@ -192,4 +192,41 @@ public class VuApiTests
             }
         );
     }
+
+    [Fact]
+    public async Task GetLectures_ValidJson_ReturnsLectures()
+    {
+        // Arrange
+        const string department = "mif";
+        const string group = "programu-sistemos-4k-5gr-2026";
+
+        // simplified API response containing only fields we care about
+        const string json = """
+        {
+            "events": [
+                {
+                    "className": "e98769",
+                    "title": "<a data-rooms=\"&lt;span&gt;&lt;strong&gt;Patalpos: &lt;/strong&gt;306 (MIF-Naug.)&lt;/span&gt;\">Programų sistemų inžinerijos procesas</a><br>306 (MIF-Naug.)<br>",
+                    "start": "2026-11-23T12:40:00",
+                    "end": "2026-11-23T13:50:00"
+                }
+            ]
+        }
+        """;
+
+        using var httpClient = CreateHttpClient(json);
+
+        // Act
+        var lectures = await VuApi.GetLectures(department, group, httpClient);
+
+        // Assert
+        var lecture = Assert.Single(lectures);
+
+        Assert.Equal("Programų sistemų inžinerijos procesas", lecture.Module);
+        Assert.Equal("306 (MIF-Naug.)", lecture.Room);
+        Assert.Equal(DayOfWeek.Monday, lecture.Slot.Day);
+        Assert.Equal(new TimeOnly(12, 40), lecture.Slot.Start);
+        Assert.Equal(new TimeOnly(13, 50), lecture.Slot.End);
+        Assert.Equal("e98769", lecture.ModuleId);
+    }
 }
