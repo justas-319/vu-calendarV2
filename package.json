@@ -4,6 +4,7 @@
     "frontend": "npm --prefix frontend run dev",
     "backend": "dotnet run --project backend/vu-calendarV2.csproj --urls http://localhost:5000",
     "format": "dotnet format backend/vu-calendarV2.csproj && npm --prefix frontend run format",
-    "setup": "npm --prefix frontend install"
+    "setup": "npm --prefix frontend install",
+    "test": "dotnet test --project VuCalendar.UnitTests/VuCalendar.UnitTests.csproj"
   }
 }
