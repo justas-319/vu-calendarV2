@@ -141,4 +141,55 @@ public class VuApiTests
         Assert.Equal("1 Kursas", courseNames[0]);
         Assert.Equal("2 Kursas", courseNames[1]);
     }
+
+    [Fact]
+    public async Task GetGroups_ValidJson_ReturnsGroups()
+    {
+        // Arrange
+        const string department = "mif";
+        const int studyTypeId = 1;
+        const string programName = "Programų+sistemos";
+        const string course = "4";
+
+        const string json = """
+        {
+            "groups": [
+                {
+                    "favourite_icon": "",
+                    "group": "Bakalauro nuolatinė, Programų sistemos 4 Kursas 1 Grupė",
+                    "url": "/mif/groups/programu-sistemos-4k-1gr-2026/"
+                },
+                {
+                    "favourite_icon": "",
+                    "group": "Bakalauro nuolatinė, Programų sistemos 4 Kursas 2 Grupė",
+                    "url": "/mif/groups/programu-sistemos-4k-2gr-2026/"
+                }
+            ]
+        }
+        """;
+
+        using var httpClient = CreateHttpClient(json);
+
+        // Act
+        var groups = await VuApi.GetGroups(department, studyTypeId, programName, course, httpClient);
+
+        // Assert
+        var returnedGroups = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(groups);
+
+        Assert.NotNull(returnedGroups);
+
+        Assert.Collection(
+            returnedGroups,
+            first =>
+            {
+                Assert.Equal("Bakalauro nuolatinė, Programų sistemos 4 Kursas 1 Grupė", first["name"]);
+                Assert.Equal("/mif/groups/programu-sistemos-4k-1gr-2026/", first["url"]);
+            },
+            second =>
+            {
+                Assert.Equal("Bakalauro nuolatinė, Programų sistemos 4 Kursas 2 Grupė", second["name"]);
+                Assert.Equal("/mif/groups/programu-sistemos-4k-2gr-2026/", second["url"]);
+            }
+        );
+    }
 }
