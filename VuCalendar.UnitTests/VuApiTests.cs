@@ -261,4 +261,72 @@ public class VuApiTests
         Assert.Equal(expectedEnd, lecture.Slot.End);
         Assert.Equal(expectedModuleId, lecture.ModuleId);
     }
+
+    [Fact]
+    public async Task GetLectures_MissingRoom_ReturnsLectureWithEmptyRoom()
+    {
+        // Arrange
+        const string department = "mif";
+        const string group = "programu-sistemos-4k-5gr-2026";
+
+        const string expectedModule = "Programų sistemų inžinerijos procesas";
+
+        const string json = $$"""
+        {
+            "events": [
+                {
+                    "className": "e98769",
+                    "title": "<a data-rooms=\"\">{{expectedModule}}</a>",
+                    "start": "2026-11-23T12:40:00",
+                    "end": "2026-11-23T13:50:00"
+                }
+            ]
+        }
+        """;
+
+        using var httpClient = CreateHttpClient(json);
+
+        // Act
+        var lectures = await VuApi.GetLectures(department, group, httpClient);
+
+        // Assert
+        var lecture = Assert.Single(lectures);
+
+        Assert.Equal(expectedModule, lecture.Module);
+        Assert.Empty(lecture.Room);
+    }
+
+    [Fact]
+    public async Task GetLectures_PlainTextTitle_ReturnsFallbackLecture()
+    {
+        // Arrange
+        const string department = "mif";
+        const string group = "programu-sistemos-4k-5gr-2026";
+
+        const string expectedModule = "Programų sistemų inžinerijos procesas";
+
+        const string json = $$"""
+        {
+            "events": [
+                {
+                    "className": "e98769",
+                    "title": "{{expectedModule}}",
+                    "start": "2026-11-23T12:40:00",
+                    "end": "2026-11-23T13:50:00"
+                }
+            ]
+        }
+        """;
+
+        using var httpClient = CreateHttpClient(json);
+
+        // Act
+        var lectures = await VuApi.GetLectures(department, group, httpClient);
+
+        // Assert
+        var lecture = Assert.Single(lectures);
+
+        Assert.Equal(expectedModule, lecture.Module);
+        Assert.Empty(lecture.Room);
+    }
 }
