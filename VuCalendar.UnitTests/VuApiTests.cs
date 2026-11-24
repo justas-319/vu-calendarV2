@@ -108,4 +108,37 @@ public class VuApiTests
         Assert.Equal("Informatika", programNames[0]);
         Assert.Equal("Programų sistemos", programNames[1]);
     }
+
+    [Fact]
+    public async Task GetCourses_ValidJson_ReturnsCourses()
+    {
+        // Arrange
+        const string department = "mif";
+        const int studyTypeId = 1;
+        const string programName = "Informatika";
+
+        const string json = """
+        {
+            "courses": [
+                [null, "Kursas"],
+                [1, "1 Kursas"],
+                [2, "2 Kursas"]
+            ]
+        }
+        """;
+
+        using var httpClient = CreateHttpClient(json);
+
+        // Act
+        var courses = await VuApi.GetCourses(department, studyTypeId, programName, httpClient);
+
+        // Assert
+        var courseNames = JsonSerializer.Deserialize<List<string>>(courses);
+
+        Assert.NotNull(courseNames);
+        Assert.Equal(2, courseNames.Count);
+
+        Assert.Equal("1 Kursas", courseNames[0]);
+        Assert.Equal("2 Kursas", courseNames[1]);
+    }
 }
