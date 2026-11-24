@@ -4,18 +4,18 @@ namespace VuCalendar.UnitTests;
 
 internal class StubHttpMessageHandler : HttpMessageHandler
 {
-    private readonly string _json;
+    private readonly string _content;
 
-    public StubHttpMessageHandler(string json)
+    public StubHttpMessageHandler(string content)
     {
-        _json = json;
+        _content = content;
     }
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            Content = new StringContent(_json)
+            Content = new StringContent(_content)
         };
 
         return Task.FromResult(response);
