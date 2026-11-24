@@ -1,6 +1,6 @@
 namespace VuCalendar.UnitTests;
 
-public class UnitTest1
+public class VuApiTests
 {
     [Fact]
     public void Test1()

@@ -20,4 +20,12 @@
     <PackageReference Include="xunit.v3.mtp-v2" Version="4.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\backend\vu-calendarV2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="VuCalendar.UnitTests" />
+  </ItemGroup>
+
 </Project>
