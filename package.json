@@ -4,9 +4,12 @@
     "frontend": "npm --prefix frontend run dev",
     "backend": "dotnet run --project backend/vu-calendarV2.csproj --urls http://localhost:5000",
     "format": "dotnet format backend/vu-calendarV2.csproj && dotnet format VuCalendar.UnitTests/VuCalendar.UnitTests.csproj && npm --prefix frontend run format",
-    "setup": "npm --prefix frontend install",
+    "setup": "npm install && npm --prefix frontend install",
     "test": "dotnet test --project VuCalendar.UnitTests/VuCalendar.UnitTests.csproj",
     "pretest:coverage": "rimraf VuCalendar.UnitTests/TestResults VuCalendar.UnitTests/CoverageReport",
     "test:coverage": "dotnet tool restore && cd VuCalendar.UnitTests && dotnet test --results-directory TestResults --coverlet --coverlet-output-format cobertura && dotnet reportgenerator \"-reports:TestResults/**/coverage.cobertura*.xml\" \"-targetdir:CoverageReport\" \"-reporttypes:Html\""
+  },
+  "devDependencies": {
+    "rimraf": "^6.1.4"
   }
 }
