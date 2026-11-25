@@ -13,3 +13,61 @@ body {
   max-height: 200px;
   overflow-y: auto;
 }
+
+.calendar-header,
+.calendar-body {
+  display: grid;
+  grid-template-columns: 60px repeat(5, 1fr);
+}
+
+.calendar-header {
+  text-align: center;
+  font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.time-slot {
+  height: 27px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.calendar-day {
+  position: relative;
+  min-width: 0;
+  border-left: 1px solid #ddd;
+}
+
+.calendar-lecture {
+  position: absolute;
+  overflow: hidden;
+}
+
+.overlap-button {
+  all: unset;
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+
+.overlap-popup {
+  position: absolute;
+  z-index: 10;
+  text-align: left;
+  min-width: 300px;
+  right: 100%;
+}
+
+.calendar-lecture {
+  background-color: #eaf2ff;
+}
+
+.calendar-lecture.module-lecture {
+  background-color: #f1edff;
+}
+
+.module-lecture {
+  left: 0;
+  width: 100%;
+}
