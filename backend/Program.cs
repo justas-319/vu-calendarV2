@@ -1,4 +1,11 @@
+using Npgsql;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// db connection info in appsettings.json
+builder.Services.AddNpgsqlDataSource(
+    builder.Configuration.GetConnectionString("db")!
+);
 
 // one shared instance of each closed type, e.g. Cache<string, List<Lecture>>
 builder.Services.AddSingleton(typeof(Cache<,>));
