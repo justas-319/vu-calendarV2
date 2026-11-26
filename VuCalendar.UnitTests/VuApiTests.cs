@@ -34,9 +34,10 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
+        var vuApi = new VuApi(httpClient);
 
         // Act
-        var departments = await VuApi.GetDepartments(httpClient);
+        var departments = await vuApi.GetDepartments();
 
         // Assert
         var department = Assert.Single(departments);
@@ -67,9 +68,10 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(html);
+        var vuApi = new VuApi(httpClient);
 
         // Act
-        var studyTypes = await VuApi.GetStudyTypes(department, httpClient);
+        var studyTypes = await vuApi.GetStudyTypes(department);
 
         // Assert
         Assert.Collection(
@@ -108,9 +110,10 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
+        var vuApi = new VuApi(httpClient);
 
         // Act
-        var programs = await VuApi.GetPrograms(department, studyTypeId, httpClient);
+        var programs = await vuApi.GetPrograms(department, studyTypeId);
 
         // Assert
         // we deserialize it since GetPrograms() returns a JSON string
@@ -145,9 +148,10 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
+        var vuApi = new VuApi(httpClient);
 
         // Act
-        var courses = await VuApi.GetCourses(department, studyTypeId, programName, httpClient);
+        var courses = await vuApi.GetCourses(department, studyTypeId, programName);
 
         // Assert
         var courseNames = JsonSerializer.Deserialize<List<string>>(courses);
@@ -192,9 +196,10 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
+        var vuApi = new VuApi(httpClient);
 
         // Act
-        var groups = await VuApi.GetGroups(department, studyTypeId, programName, course, httpClient);
+        var groups = await vuApi.GetGroups(department, studyTypeId, programName, course);
 
         // Assert
         var returnedGroups = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(groups);
@@ -247,9 +252,10 @@ public class VuApiTests
         """);
 
         using var httpClient = CreateHttpClient(json);
+        var vuApi = new VuApi(httpClient);
 
         // Act
-        var lectures = await VuApi.GetLectures(department, group, httpClient);
+        var lectures = await vuApi.GetLectures(department, group);
 
         // Assert
         var lecture = Assert.Single(lectures);
@@ -285,9 +291,10 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
+        var vuApi = new VuApi(httpClient);
 
         // Act
-        var lectures = await VuApi.GetLectures(department, group, httpClient);
+        var lectures = await vuApi.GetLectures(department, group);
 
         // Assert
         var lecture = Assert.Single(lectures);
@@ -319,9 +326,10 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
+        var vuApi = new VuApi(httpClient);
 
         // Act
-        var lectures = await VuApi.GetLectures(department, group, httpClient);
+        var lectures = await vuApi.GetLectures(department, group);
 
         // Assert
         var lecture = Assert.Single(lectures);
