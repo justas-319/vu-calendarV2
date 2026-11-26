@@ -9,11 +9,27 @@ class VuApi : IVuApi
         PropertyNameCaseInsensitive = true
     };
 
-    private readonly HttpClient _httpClient;
+    private static readonly TimeSpan LectureLifetime = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan StaticDataLifetime = TimeSpan.FromHours(24);
 
-    public VuApi(HttpClient httpClient)
+    private readonly HttpClient _httpClient;
+    private readonly Cache<string, List<Department>> _departmentCache;
+    private readonly Cache<string, List<StudyType>> _studyTypeCache;
+    private readonly Cache<string, string> _textCache;
+    private readonly Cache<string, List<Lecture>> _lectureCache;
+
+    public VuApi(
+        HttpClient httpClient,
+        Cache<string, List<Department>> departmentCache,
+        Cache<string, List<StudyType>> studyTypeCache,
+        Cache<string, string> textCache,
+        Cache<string, List<Lecture>> lectureCache)
     {
         _httpClient = httpClient;
+        _departmentCache = departmentCache;
+        _studyTypeCache = studyTypeCache;
+        _textCache = textCache;
+        _lectureCache = lectureCache;
     }
 
     private async Task<T> GetJson<T>(string url)
@@ -28,88 +44,108 @@ class VuApi : IVuApi
 
     public async Task<List<Department>> GetDepartments()
     {
-        return await GetJson<List<Department>>("api/department");
+        const string url = "api/department";
+
+        return await _departmentCache.GetOrAdd(url, () => GetJson<List<Department>>(url), StaticDataLifetime);
     }
 
     public async Task<List<StudyType>> GetStudyTypes(string department)
     {
-        using var response = await _httpClient.GetAsync(department + "/");
-        response.EnsureSuccessStatusCode();
-
-        using Stream stream = await response.Content.ReadAsStreamAsync();
-
-        AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
-        AngleSharp.IBrowsingContext context = AngleSharp.BrowsingContext.New(config);
-        var document = await context.OpenAsync(req => req.Content(stream));
-
-        List<StudyType> studyTypes = [];
-
-        // selects all <option> fields inside #id_study_program_filter (the dropdown for study type)
-        var options = document.QuerySelectorAll("#id_study_program_filter option");
-
-        foreach (var option in options)
+        return await _studyTypeCache.GetOrAdd(department, async () =>
         {
-            string? value = option.GetAttribute("value");
+            using var response = await _httpClient.GetAsync(department + "/");
+            response.EnsureSuccessStatusCode();
 
-            // writes value to id and skips fields with empty ids (placeholder text)
-            if (!int.TryParse(value, out int id))
+            using Stream stream = await response.Content.ReadAsStreamAsync();
+
+            AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
+            AngleSharp.IBrowsingContext context = AngleSharp.BrowsingContext.New(config);
+            var document = await context.OpenAsync(req => req.Content(stream));
+
+            List<StudyType> studyTypes = [];
+
+            // selects all <option> fields inside #id_study_program_filter (the dropdown for study type)
+            var options = document.QuerySelectorAll("#id_study_program_filter option");
+
+            foreach (var option in options)
             {
-                continue;
+                string? value = option.GetAttribute("value");
+
+                // writes value to id and skips fields with empty ids (placeholder text)
+                if (!int.TryParse(value, out int id))
+                {
+                    continue;
+                }
+
+                studyTypes.Add(new StudyType
+                {
+                    Id = id,
+                    Name = option.TextContent.Trim()
+                });
             }
 
-            studyTypes.Add(new StudyType
-            {
-                Id = id,
-                Name = option.TextContent.Trim()
-            });
-        }
-
-        return studyTypes;
+            return studyTypes;
+        }, StaticDataLifetime);
     }
 
     // [TODO] filter out first element "Studiju programa" and empty elements "" 
     public async Task<string> GetPrograms(string department, int studyTypeId)
     {
-        Programs programResponse = await GetJson<Programs>(department + "/ajax_program_select_choices/11/?study_type_id=" + studyTypeId);
+        string url = department + "/ajax_program_select_choices/11/?study_type_id=" + studyTypeId;
 
-        List<string> programs = new List<string>();
-        programResponse.ProgramsList.RemoveAt(0);
-
-        foreach (List<string?> item in programResponse.ProgramsList)
+        return await _textCache.GetOrAdd(url, async () =>
         {
-            programs.Add(item[1]);
-        }
+            Programs programResponse = await GetJson<Programs>(url);
 
-        return JsonSerializer.Serialize(programs);
+            List<string> programs = new List<string>();
+            programResponse.ProgramsList.RemoveAt(0);
+
+            foreach (List<string?> item in programResponse.ProgramsList)
+            {
+                programs.Add(item[1]);
+            }
+
+            return JsonSerializer.Serialize(programs);
+        }, StaticDataLifetime);
     }
 
     // [TODO] filter out first element "Kursas"
     public async Task<string> GetCourses(string department, int studyTypeId, string programName)
     {
-        Course courseResponse = await GetJson<Course>($"{department}/ajax_course_select_choices/11/?study_type_id={studyTypeId}&study_program_name={programName}");
+        string url = $"{department}/ajax_course_select_choices/11/?study_type_id={studyTypeId}&study_program_name={programName}";
 
-        List<string> courses = new List<string>();
-        courseResponse.Courses.RemoveAt(0);
-
-        foreach (Object[] item in courseResponse.Courses)
+        return await _textCache.GetOrAdd(url, async () =>
         {
-            courses.Add(item[1].ToString());
-        }
+            Course courseResponse = await GetJson<Course>(url);
 
-        return JsonSerializer.Serialize(courses);
+            List<string> courses = new List<string>();
+            courseResponse.Courses.RemoveAt(0);
+
+            foreach (Object[] item in courseResponse.Courses)
+            {
+                courses.Add(item[1].ToString());
+            }
+
+            return JsonSerializer.Serialize(courses);
+        }, StaticDataLifetime);
     }
 
     public async Task<string> GetGroups(string department, int studyTypeId, string programName, string course)
     {
-        Groups groupResponse = await GetJson<Groups>($"{department}/ajax_filtered_groups/11/?study_type_id={studyTypeId}&study_program_name={programName}&course={course}&exams=False");
+        string url = $"{department}/ajax_filtered_groups/11/?study_type_id={studyTypeId}&study_program_name={programName}&course={course}&exams=False";
 
-        return JsonSerializer.Serialize(
-            groupResponse.GroupsList.Select(group => new
-            {
-                name = group.GroupName,
-                url = group.Url
-            })
-        );
+        return await _textCache.GetOrAdd(url, async () =>
+        {
+            Groups groupResponse = await GetJson<Groups>(url);
+
+            return JsonSerializer.Serialize(
+                groupResponse.GroupsList.Select(group => new
+                {
+                    name = group.GroupName,
+                    url = group.Url
+                })
+            );
+        }, StaticDataLifetime);
     }
 
     // TODO: parse `content` into Lecture records.
@@ -119,47 +155,53 @@ class VuApi : IVuApi
         DateTime weekStart = StartOfWeek(date: DateTime.Today);
         DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
 
-        Events events = await GetJson<Events>($"{department}/ajax_fullcalendar_events/{group}/group/321/?start={weekStart.ToString("s")}&end={weekEnd.ToString("s")}");
+        // the url contains the week, so a new week automatically becomes a new cache key
+        string url = $"{department}/ajax_fullcalendar_events/{group}/group/321/?start={weekStart.ToString("s")}&end={weekEnd.ToString("s")}";
 
-        List<Lecture> lectures = [];
-        AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
-        AngleSharp.IBrowsingContext context = AngleSharp.BrowsingContext.New(config);
-        string module = "";
-        string room = "";
-        foreach (Event item in events.EventsList)
+        return await _lectureCache.GetOrAdd(url, async () =>
         {
-            var document = await context.OpenAsync(req => req.Content(item.BigTitle));
-            try
+            Events events = await GetJson<Events>(url);
+
+            List<Lecture> lectures = [];
+            AngleSharp.IConfiguration config = AngleSharp.Configuration.Default;
+            AngleSharp.IBrowsingContext context = AngleSharp.BrowsingContext.New(config);
+            string module = "";
+            string room = "";
+            foreach (Event item in events.EventsList)
             {
-                module = document.QuerySelector("a").TextContent;
-                room = "";
-
-                var roomsHtml = document.QuerySelector("a").GetAttribute("data-rooms");
-
-                if (!string.IsNullOrWhiteSpace(roomsHtml))
+                var document = await context.OpenAsync(req => req.Content(item.BigTitle));
+                try
                 {
-                    var roomsDocument = await context.OpenAsync(req => req.Content(roomsHtml));
-                    // remove the "Patalpos:" label to keep only the room information
-                    roomsDocument.QuerySelector("strong").Remove();
-                    room = roomsDocument.Body.TextContent.Trim();
+                    module = document.QuerySelector("a").TextContent;
+                    room = "";
+
+                    var roomsHtml = document.QuerySelector("a").GetAttribute("data-rooms");
+
+                    if (!string.IsNullOrWhiteSpace(roomsHtml))
+                    {
+                        var roomsDocument = await context.OpenAsync(req => req.Content(roomsHtml));
+                        // remove the "Patalpos:" label to keep only the room information
+                        roomsDocument.QuerySelector("strong").Remove();
+                        room = roomsDocument.Body.TextContent.Trim();
+                    }
                 }
+                catch (System.Exception)
+                {
+                    module = item.BigTitle;
+                    room = "";
+                }
+
+                TimeSlot slot = new(
+                    item.Start.DayOfWeek,
+                    TimeOnly.FromDateTime(item.Start),
+                    TimeOnly.FromDateTime(item.End)
+                );
+
+                lectures.Add(new Lecture(module, room, slot, item.ClassName));
             }
-            catch (System.Exception)
-            {
-                module = item.BigTitle;
-                room = "";
-            }
 
-            TimeSlot slot = new(
-                item.Start.DayOfWeek,
-                TimeOnly.FromDateTime(item.Start),
-                TimeOnly.FromDateTime(item.End)
-            );
-
-            lectures.Add(new Lecture(module, room, slot, item.ClassName));
-        }
-
-        return lectures;
+            return lectures;
+        }, LectureLifetime);
     }
 
     static DateTime StartOfWeek(DateTime date, DayOfWeek startOfWeek = DayOfWeek.Monday)
