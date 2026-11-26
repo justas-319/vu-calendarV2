@@ -28,6 +28,24 @@ Run these commands in separate terminal windows and go to localhost on frontend'
 
 ---
 
+## ADR
+
+### 1. Use an existing VU timetable API
+
+**Context:** Our web app required a way to get timetable data
+
+**Decision:** Decided to use the already existing data that VU provides
+
+**Consequences:** The app depends on an external API that we do not control
+
+### 2. Lecture overlaping logic implementation in frontend
+
+**Context:** Our web app required a way to check if lectures overlapped with modules
+
+**Decision:** Decided to implement the logic of overlapping in the frontend
+
+**Consequences:** The backend does not know what lectures overlap with what modules
+
 ## User stories
 
 ### 1. View up-to-date timetable
