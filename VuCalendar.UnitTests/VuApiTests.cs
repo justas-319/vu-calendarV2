@@ -34,7 +34,7 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
-        var vuApi = new VuApi(httpClient);
+        var vuApi = new VuApi(httpClient, new(), new(), new(), new());
 
         // Act
         var departments = await vuApi.GetDepartments();
@@ -68,7 +68,7 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(html);
-        var vuApi = new VuApi(httpClient);
+        var vuApi = new VuApi(httpClient, new(), new(), new(), new());
 
         // Act
         var studyTypes = await vuApi.GetStudyTypes(department);
@@ -110,7 +110,7 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
-        var vuApi = new VuApi(httpClient);
+        var vuApi = new VuApi(httpClient, new(), new(), new(), new());
 
         // Act
         var programs = await vuApi.GetPrograms(department, studyTypeId);
@@ -148,7 +148,7 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
-        var vuApi = new VuApi(httpClient);
+        var vuApi = new VuApi(httpClient, new(), new(), new(), new());
 
         // Act
         var courses = await vuApi.GetCourses(department, studyTypeId, programName);
@@ -196,7 +196,7 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
-        var vuApi = new VuApi(httpClient);
+        var vuApi = new VuApi(httpClient, new(), new(), new(), new());
 
         // Act
         var groups = await vuApi.GetGroups(department, studyTypeId, programName, course);
@@ -252,7 +252,7 @@ public class VuApiTests
         """);
 
         using var httpClient = CreateHttpClient(json);
-        var vuApi = new VuApi(httpClient);
+        var vuApi = new VuApi(httpClient, new(), new(), new(), new());
 
         // Act
         var lectures = await vuApi.GetLectures(department, group);
@@ -291,7 +291,7 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
-        var vuApi = new VuApi(httpClient);
+        var vuApi = new VuApi(httpClient, new(), new(), new(), new());
 
         // Act
         var lectures = await vuApi.GetLectures(department, group);
@@ -326,7 +326,7 @@ public class VuApiTests
         """;
 
         using var httpClient = CreateHttpClient(json);
-        var vuApi = new VuApi(httpClient);
+        var vuApi = new VuApi(httpClient, new(), new(), new(), new());
 
         // Act
         var lectures = await vuApi.GetLectures(department, group);
