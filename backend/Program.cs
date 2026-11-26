@@ -1,5 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// one shared instance of each closed type, e.g. Cache<string, List<Lecture>>
+builder.Services.AddSingleton(typeof(Cache<,>));
+
 // HttpClient is created and injected by the framework, configured once here
 builder.Services.AddHttpClient<IVuApi, VuApi>(client =>
 {

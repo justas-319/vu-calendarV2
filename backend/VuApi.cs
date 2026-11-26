@@ -9,13 +9,28 @@ class VuApi : IVuApi
         PropertyNameCaseInsensitive = true
     };
 
-    private readonly HttpClient _httpClient;
+    private static readonly TimeSpan LectureLifetime = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan StaticDataLifetime = TimeSpan.FromHours(24);
 
-    public VuApi(HttpClient httpClient)
+    private readonly HttpClient _httpClient;
+    private readonly Cache<string, List<Department>> _departmentCache;
+    private readonly Cache<string, List<StudyType>> _studyTypeCache;
+    private readonly Cache<string, string> _textCache;
+    private readonly Cache<string, List<Lecture>> _lectureCache;
+
+    public VuApi(
+        HttpClient httpClient,
+        Cache<string, List<Department>> departmentCache,
+        Cache<string, List<StudyType>> studyTypeCache,
+        Cache<string, string> textCache,
+        Cache<string, List<Lecture>> lectureCache)
     {
         _httpClient = httpClient;
+        _departmentCache = departmentCache;
+        _studyTypeCache = studyTypeCache;
+        _textCache = textCache;
+        _lectureCache = lectureCache;
     }
-
     private async Task<T> GetJson<T>(string url)
     {
         using var response = await _httpClient.GetAsync(url);
