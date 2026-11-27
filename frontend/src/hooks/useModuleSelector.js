@@ -29,8 +29,8 @@ function useModuleSelector() {
   // checks department as well since a different faculty may have the same id
   const alreadyAdded = selectedModulesArray.some(
     (module) =>
-      module.id === selectedModule.id &&
-      module.department === selectedModuleFaculty.abbreviation,
+      module.id === selectedModule?.id &&
+      module.department === selectedModuleFaculty?.abbreviation,
   );
 
   // fetch faculty options one time, when the page first loads
