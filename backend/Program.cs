@@ -1,4 +1,13 @@
+using Microsoft.Extensions.Options;
+using System.Text.Json;
+using Npgsql;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// db connection info in appsettings.json
+builder.Services.AddNpgsqlDataSource(
+    builder.Configuration.GetConnectionString("db")!
+);
 
 // one shared instance of each closed type, e.g. Cache<string, List<Lecture>>
 builder.Services.AddSingleton(typeof(Cache<,>));
@@ -50,7 +59,7 @@ app.MapGet("/api/study-types/{department}", async (IVuApi vuApi, string departme
     return await vuApi.GetStudyTypes(department);
 });
 
-app.MapGet("/api/timetable/{department}/{group}", async (IVuApi vuApi, string department, string group) =>
+app.MapGet("/api/timetable/{department}/{group}", async (IVuApi vuApi, NpgsqlDataSource db, string department, string group) =>
 {
     Timetable timetable = new();
     List<object> result = [];
@@ -70,6 +79,16 @@ app.MapGet("/api/timetable/{department}/{group}", async (IVuApi vuApi, string de
             clashes
         });
     }
+
+    await using var cmd = db.CreateCommand("INSERT INTO events_by_week (week_start, faculty, group_name, events) values (@week, @faculty, @group, @events)");
+    cmd.Parameters.AddWithValue("week", DateTime.Now);
+    cmd.Parameters.AddWithValue("faculty", department);
+    cmd.Parameters.AddWithValue("group", group);
+    cmd.Parameters.Add(new NpgsqlParameter("events", NpgsqlTypes.NpgsqlDbType.Text)
+    {
+        Value = JsonSerializer.Serialize(result)
+    });
+    await cmd.ExecuteScalarAsync();
 
     return result;
 });
