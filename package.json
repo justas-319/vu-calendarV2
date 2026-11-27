@@ -4,6 +4,7 @@
     "frontend": "npm --prefix frontend run dev",
     "backend": "dotnet run --project backend/vu-calendarV2.csproj --urls http://localhost:5000",
     "format": "dotnet format backend/vu-calendarV2.csproj && dotnet format VuCalendar.UnitTests/VuCalendar.UnitTests.csproj && npm --prefix frontend run format",
+    "format:check": "dotnet format backend/vu-calendarV2.csproj --verify-no-changes && dotnet format VuCalendar.UnitTests/VuCalendar.UnitTests.csproj --verify-no-changes && npm --prefix frontend run format:check",
     "setup": "npm install && npm --prefix frontend install",
     "test": "dotnet test --project VuCalendar.UnitTests/VuCalendar.UnitTests.csproj",
     "pretest:coverage": "rimraf VuCalendar.UnitTests/TestResults VuCalendar.UnitTests/CoverageReport",
