@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-
+using System.Text.Json;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,7 +84,10 @@ app.MapGet("/api/timetable/{department}/{group}", async (IVuApi vuApi, NpgsqlDat
     cmd.Parameters.AddWithValue("week", DateTime.Now);
     cmd.Parameters.AddWithValue("faculty", department);
     cmd.Parameters.AddWithValue("group", group);
-    cmd.Parameters.AddWithValue("events", DateTime.Now.ToString());
+    cmd.Parameters.Add(new NpgsqlParameter("events", NpgsqlTypes.NpgsqlDbType.Text)
+    {
+        Value = JsonSerializer.Serialize(result)
+    });
     await cmd.ExecuteScalarAsync();
 
     return result;
